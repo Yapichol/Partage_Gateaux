@@ -16,9 +16,13 @@ Les différentes fonctionnalités qui sont appelables à partir du logiciel sont
 
 - Permettre à l'utilisateur de proposer un partage entre les différents agents du graphe ouvert (placer sur les arcs une pondération)
 
-- Vérifier si le partage d'un graphe est stable
+- Vérifier si le partage d'un graphe est stable (vérification automatique ou bien vérification suite à l'appel de la fonctionnalité par l'utilisateur)
+
+- Permettre à l'utilisateur de zoomer sur le graphe
 
 Secondaire :
+
+- Permettre à l'utilisateur de réorganiser les noeuds dans l'espace afin de rendre le graphe plus facile à lire
 
 - Générer un partage stable à partir du partage actuel s'il n'est pas stable
 
