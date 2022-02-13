@@ -1,9 +1,9 @@
 # Cahier des charges
 
-Le logiciel concerne le paretages de gâteaux entre plusieurs noeuds d'un graphe (non orienté). Ces graphes permettent de modéliser les forces de négociations entre plusieurs agents au sein d'un réseaux. Dans un graphe, un partage ne peut avoir lieu qu'entre 2 agents et chaque agent ne peut partager qu'avec un seul autre agent à la fois, le partage est représenté par la proportion du gâteau que chacun des deux agents obtient (donc pour un partage entre 2 agents, deux nombres dont la somme est égale à 1). Le but est d'abord de déterminer si un graphe avec un partage donné est stable, c'est à dire que parmis les couples d'agents, aucun n'a d'intérêt à rompre son accord actuel pour réaliser un partage avec un autre agent. Le logiciel s'ouvre dans une fenêtre, il permet de visualiser au moins un graphe et possède des boutons afin d'agir sur ce dernier et d'appeler les différentes fonctionnalités.
+Le logiciel concerne les partages de gâteaux entre plusieurs noeuds d'un graphe (non orienté). Ces graphes permettent de modéliser les forces de négociations entre plusieurs agents au sein d'un réseau. Dans un graphe, un partage ne peut avoir lieu qu'entre 2 agents et chaque agent ne peut partager qu'avec un seul autre agent à la fois, le partage est représenté par la proportion du gâteau que chacun des deux agents obtient (donc pour un partage entre 2 agents, deux nombres dont la somme est égale à 1). Le but est d'abord de déterminer si un graphe avec un partage donné est stable, c'est à dire que parmis les couples d'agents, aucun n'a d'intérêt à rompre son accord actuel pour réaliser un partage avec un autre agent. Le logiciel s'ouvre dans une fenêtre, il permet de visualiser au moins un graphe et possède des boutons afin d'agir sur ce dernier et d'appeler les différentes fonctionnalités.
 Les différentes fonctionnalités qui sont appelables à partir du logiciel sont :
 
-- Créer un graphe (neouds et arcs)
+- Créer un graphe (noeuds et arcs)
 
 - Enregistrer un graphe (et son partage actuel) sous forme de fichier texte
 
@@ -23,7 +23,7 @@ Secondaire :
 
 - Permettre de voir l'évolution étape par étape du partage non stable vers le partage stable lorsqu'on demande une génération de partage stable
 
-- Vérifier si un partage est un blanced outcome
+- Vérifier si un partage est un balanced outcome
 
 - Générer le balanced outcome d'un graphe
 
