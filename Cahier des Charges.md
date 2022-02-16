@@ -17,6 +17,8 @@ Les différentes fonctionnalités qui sont appelables à partir du logiciel sont
 
 - Calcul du balanced outcome à l'aide de la méthode Edge balacing Dynamics (https://www.nikhildevanur.com/pubs/edgebalancing.pdf)
 
+- Avoir des graphes de bases pour permettre de tester et prendre en main directement l'application à son lancement
+
 Secondaire :
 
 - Permettre à l'utilisateur de réorganiser les noeuds dans l'espace afin de rendre le graphe plus facile à lire
