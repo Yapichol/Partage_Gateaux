@@ -19,20 +19,29 @@ if __name__=="__main__":
         g.ajouter_arc("B", "A")
         g.ajouter_liste_arcs([("A","C"),("A","D"),("B","E")])
 
-        g.afficher_graphe()
+        #g.afficher_graphe()
+        g.affiche()
         g.partage_aleatoire()
         g.afficher_graphe()
-        
-        g.affiche()
+        stable,pas_stable= g.est_stable()
+        print("Le graphe est stable? ",stable)
+        print("Noeuds pas stables:",pas_stable)
+        #print("\nDEVENIR STABLE")
+        #g.devenir_stable(pas_stable)
+
         
     #on test avec un graphe généré aléatoirement
     else :
         
         g2 = Graphe()
-        g2.generer_graphe(6,0.2)
+        g2.generer_graphe(5,0.2)
         g2.afficher_graphe()
         g2.affiche()
         g2.partage_aleatoire()
         g2.afficher_graphe()
+        stable,pas_stable= g2.est_stable()
+        print("Le graphe est stable? ",stable)
+        print("Noeuds pas stables:",pas_stable)
+        
         
     print("Fin")
