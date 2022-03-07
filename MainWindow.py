@@ -66,9 +66,11 @@ class MainWindow(QMainWindow):
         modeToolBar = QToolBar("Navigation")
 
         self.addToolBar( modeToolBar )
-        actMove = modeToolBar.addAction( QIcon(":/icons/move.png"), "&Move", self.move )
-        actZoomin = modeToolBar.addAction( QIcon(":/icons/zoom-in.png"), "&Move", self.zoomin )
-        actZoomout = modeToolBar.addAction( QIcon(":/icons/zoom-out.png"), "&Move", self.zoomout )
+        actMove = modeToolBar.addAction( QIcon(":/icons/move.png"), "&Move", self.move)
+        actDraw = modeToolBar.addAction( QIcon(":/icons/draw.png"), "&Draw", self.draw)
+        actSelect = modeToolBar.addAction( QIcon(":/icons/select.png"), "&Select", self.select)
+        actZoomin = modeToolBar.addAction( QIcon(":/icons/zoom-in.png"), "&Zoomin", self.zoomin)
+        actZoomout = modeToolBar.addAction( QIcon(":/icons/zoom-out.png"), "&Zoomout", self.zoomout)
 
         self.canvas = Canvas()
         v_layout = QVBoxLayout()
@@ -126,4 +128,13 @@ class MainWindow(QMainWindow):
             event.accept()
         else :
             event.ignore()
+
+
+    def draw(self):
+        print("Draw...")
+        self.canvas.set_mode("Draw")
+
+    def select(self):
+        print("Select...")
+        self.canvas.set_mode("Select")
     ##############
