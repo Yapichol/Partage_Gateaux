@@ -19,6 +19,9 @@ class MainWindow(QMainWindow):
         fileMenu = bar.addMenu("File")
         toolsMenu = bar.addMenu("Tools")
 
+        fileBar = QToolBar("File")
+        self.addToolBar(fileBar)
+
 
         cr = QAction(QIcon(),"Create...",self)
         cr.setShortcut(QKeySequence("Ctrl+C"))
@@ -55,6 +58,9 @@ class MainWindow(QMainWindow):
         toolsMenu.addAction(balanced)
         balanced.triggered.connect(self.bal)
 
+        close = fileMenu.addAction(QIcon(":/icons/quit.png"), "&Quit", self.quit, QKeySequence("Ctrl+Q"))
+        fileBar.addAction(close)
+
 
 
         modeToolBar = QToolBar("Navigation")
@@ -78,6 +84,9 @@ class MainWindow(QMainWindow):
         filename = QFileDialog.getOpenFileName(self,"Open File")
 	    #print(filename)
         fi,a = filename
+
+    def import_graph(self, graphe):
+        self.canvas.imp_g(graphe)
         
     def exp(self):
         print("Export...")
@@ -85,7 +94,7 @@ class MainWindow(QMainWindow):
 
     def move(self):
         print("Move...")
-        pass
+        self.canvas.set_mode("Move")
 
     def stab(self):
         print("Stable...")
@@ -106,21 +115,15 @@ class MainWindow(QMainWindow):
     def zoomout(self):
         print("Zoom out...")
         pass
+
+    def quit(self):
+        print("Quit")
+        self.close()
+
+    def closeEvent(self, event):
+        reponse = QMessageBox.question(self, "Quitter", "Voulez-vous quitter ?" )
+        if reponse == QMessageBox.Yes:
+            event.accept()
+        else :
+            event.ignore()
     ##############
-    
-
-
-
-if __name__=="__main__":
-    app = QApplication(sys.argv)
-
-    window = MainWindow()
-    
-
-    window.show()
-    
-
-    app.exec_()
-
-
-
