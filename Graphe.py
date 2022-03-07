@@ -142,6 +142,12 @@ class Graphe :
                 if v!=valeur:
                     self.noeuds.append((nom,valeur))
                     self.noeuds.remove(n)
+    
+    def get_val_noeud(self, noeud):
+        for i in self.noeuds:
+            if i[0] == noeud :
+                return i[1]
+        return -1
                 
     def partage_aleatoire(self):
         """Propose un partage aléatoire, on suppose ici que les ressources à 
