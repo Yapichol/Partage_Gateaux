@@ -3,6 +3,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from Canvas import *
+from Graphe import *
 import resources
 import time
 
@@ -88,6 +89,7 @@ class MainWindow(QMainWindow):
         fi,a = filename
 
     def import_graph(self, graphe):
+        
         self.canvas.imp_g(graphe)
         
     def exp(self):
@@ -100,7 +102,7 @@ class MainWindow(QMainWindow):
 
     def stab(self):
         print("Stable...")
-        pass
+        print(self.canvas.graphe.est_stable())
 
     def bal(self):
         print("Balanced...")
@@ -137,4 +139,12 @@ class MainWindow(QMainWindow):
     def select(self):
         print("Select...")
         self.canvas.set_mode("Select")
+
+
+
+
+
+        
+
+
     ##############
