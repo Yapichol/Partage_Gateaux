@@ -87,10 +87,10 @@ class Canvas(QWidget):
 		pointpress = event.pos()
 		if self.mode == "Draw" :
 			self.cursorPosPress = QPoint(pointpress.x() - self.posCanvas[0], pointpress.y() - self.posCanvas[1])
+		#elif self.mode == "Move" :
+		#	self.cursorPosPress = QPoint(pointpress.x() - self.posCanvas[0], pointpress.y() - self.posCanvas[1])
+		#	self.cursorPosRelease = self.cursorPosPress
 		elif self.mode == "Move" :
-			self.cursorPosPress = QPoint(pointpress.x() - self.posCanvas[0], pointpress.y() - self.posCanvas[1])
-			self.cursorPosRelease = self.cursorPosPress
-		elif self.mode == "Select" :
 			self.listSelected = []
 			self.cursorPosPress = QPoint(pointpress.x() - self.posCanvas[0], pointpress.y() - self.posCanvas[1])
 			self.cursorPosRelease = self.cursorPosPress
@@ -106,10 +106,10 @@ class Canvas(QWidget):
 		pointrelease = event.pos()
 		if self.mode == "Draw" :
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
+		#elif self.mode == "Move" :
+		#	self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
+		#	self.posCanvas = (self.posCanvas[0] + self.cursorPosRelease.x() - self.cursorPosPress.x(), self.posCanvas[1] + self.cursorPosRelease.y() - self.cursorPosPress.y())
 		elif self.mode == "Move" :
-			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
-			self.posCanvas = (self.posCanvas[0] + self.cursorPosRelease.x() - self.cursorPosPress.x(), self.posCanvas[1] + self.cursorPosRelease.y() - self.cursorPosPress.y())
-		elif self.mode == "Select" :
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
 			self.listSelected = []
 		self.update()
@@ -118,18 +118,18 @@ class Canvas(QWidget):
 		pointrelease = event.pos()
 		if self.mode == "Draw" :
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
+		#elif self.mode == "Move" :
+		#	self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
+		#	self.posCanvas = (self.posCanvas[0] + self.cursorPosRelease.x() - self.cursorPosPress.x(), self.posCanvas[1] + self.cursorPosRelease.y() - self.cursorPosPress.y())
 		elif self.mode == "Move" :
-			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
-			self.posCanvas = (self.posCanvas[0] + self.cursorPosRelease.x() - self.cursorPosPress.x(), self.posCanvas[1] + self.cursorPosRelease.y() - self.cursorPosPress.y())
-		elif self.mode == "Select" :
 			ancienPos = self.cursorPosRelease
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
 			if self.listSelected != []:
 				for i in self.listSelected :
 					pos = self.dicNoeuds[i]
 					self.dicNoeuds[i] = QPoint(pos.x() + self.cursorPosRelease.x() - ancienPos.x(), pos.y() + self.cursorPosRelease.y() - ancienPos.y())
-			#else :
-				#self.posCanvas = (self.posCanvas[0] + self.cursorPosRelease.x() - self.cursorPosPress.x(), self.posCanvas[1] + self.cursorPosRelease.y() - self.cursorPosPress.y())
+			else :
+				self.posCanvas = (self.posCanvas[0] + self.cursorPosRelease.x() - self.cursorPosPress.x(), self.posCanvas[1] + self.cursorPosRelease.y() - self.cursorPosPress.y())
 		self.update()
 	
 	def paintEvent(self, event):
