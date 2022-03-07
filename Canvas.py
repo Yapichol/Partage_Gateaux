@@ -19,7 +19,7 @@ class Canvas(QWidget):
 		self.posCanvas = (0,0)
 		self.cursorPosPress = None
 		self.cursorPosRelease = None
-		self.mode = "Select"              # mode 
+		self.mode = "Move"              # mode 
 		self.listSelected = []          # liste des elements selectionnes
 		self.tailleNoeud = 35
 	
