@@ -26,8 +26,8 @@ if __name__=="__main__":
         stable,pas_stable= g.est_stable()
         print("Le graphe est stable? ",stable)
         print("Noeuds pas stables:",pas_stable)
-        #print("\nDEVENIR STABLE")
-        #g.devenir_stable(pas_stable)
+        print("\nDEVENIR STABLE")
+        g.devenir_stable(pas_stable)
 
         
     #on test avec un graphe généré aléatoirement
