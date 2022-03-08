@@ -6,7 +6,7 @@ from Canvas import *
 from Graphe import *
 import resources
 import time
-
+import os
 
 
 class MainWindow(QMainWindow):
@@ -45,6 +45,13 @@ class MainWindow(QMainWindow):
         fileMenu.addAction(ex)
         ex.triggered.connect(self.exp)
 
+        alea = QAction(QIcon(),"Graphe Aléatoire...",self)
+        alea.setShortcut(QKeySequence("Ctrl+A"))
+        alea.setToolTip("Graphe Aléatoire")
+        alea.setStatusTip("Graphe Aléatoire")
+        fileMenu.addAction(alea)
+        alea.triggered.connect(self.alea)
+
         stable = QAction(QIcon(),"Verif stable...",self)
         stable.setShortcut(QKeySequence("Ctrl+S"))
         stable.setToolTip("Stable")
@@ -58,6 +65,13 @@ class MainWindow(QMainWindow):
         balanced.setStatusTip("Balanced")
         toolsMenu.addAction(balanced)
         balanced.triggered.connect(self.bal)
+
+        rend_stable = QAction(QIcon(),"Rend stable...",self)
+        rend_stable.setShortcut(QKeySequence("Ctrl+R"))
+        rend_stable.setToolTip("Rend Stable")
+        rend_stable.setStatusTip("Rend stable")
+        toolsMenu.addAction(rend_stable)
+        rend_stable.triggered.connect(self.rend_stable)
 
         close = fileMenu.addAction(QIcon(":/icons/quit.png"), "&Quit", self.quit, QKeySequence("Ctrl+Q"))
         fileBar.addAction(close)
@@ -84,9 +98,35 @@ class MainWindow(QMainWindow):
     ##############
     def imp(self):
         print("Import...")
+        g = Graphe()
         filename = QFileDialog.getOpenFileName(self,"Open File")
 	    #print(filename)
         fi,a = filename
+
+        data = open(fi, "r")
+
+        nbsommets = int(data.readline())
+        nbarcs = int(data.readline())
+
+        doc = data.readlines()
+
+        for i in range(0,nbsommets):
+            tmp = doc[i]
+            tmp = tmp.replace(',','')
+            tmp = tmp.replace(' ','')
+            tmp = tmp.replace('\n','')
+            lettre = tmp[0]
+            valeur = float(tmp[1:])
+            g.ajouter_noeud(lettre)
+            g.modifier_gain(lettre,valeur)
+
+        for i in range(nbsommets,len(doc)):
+            arc = str(doc[i])
+            arc=arc.replace(' ','')
+            arc=arc.replace(',','')
+            g.ajouter_arc(arc[0],arc[1])
+
+        self.import_graph(g)
 
     def import_graph(self, graphe):
         
@@ -94,7 +134,30 @@ class MainWindow(QMainWindow):
         
     def exp(self):
         print("Export...")
-        pass
+
+        path, dirs, files = next(os.walk("./graphes"))
+        file_count = len(files)
+        
+        name = "graphe"+str(file_count)+".txt"
+
+        with open('graphes/'+name,'w') as f:
+            f.write(str(len(self.canvas.graphe.noeuds))+'\n')
+            f.write(str(len(self.canvas.graphe.arcs))+'\n')
+
+            for i in self.canvas.graphe.noeuds :
+                lettre,valeur = i
+                f.write(lettre+','+str(valeur)+'\n')
+
+            for i in self.canvas.graphe.arcs:
+                lettre1,lettre2 = i
+                f.write(lettre1+','+lettre2+'\n')
+        
+    def alea(self):
+
+        g = Graphe()
+        g.generer_graphe(6,0.2)
+        g.partage_aleatoire()
+        self.import_graph(g)
 
     def move(self):
         print("Move...")
@@ -102,7 +165,17 @@ class MainWindow(QMainWindow):
 
     def stab(self):
         print("Stable...")
-        print(self.canvas.graphe.est_stable())
+        boole,liste = self.canvas.graphe.est_stable()
+        if boole :
+            good = QMessageBox()
+            good.setText("Ce graphe est stable")
+            good.exec()
+        else :
+            bad = QMessageBox()
+            bad.setText("Ce graphe n'est pas stable")
+            bad.exec()  
+            self.rend_stable()           
+        #print(self.canvas.graphe.est_stable())
 
     def bal(self):
         print("Balanced...")
@@ -141,10 +214,43 @@ class MainWindow(QMainWindow):
         self.canvas.set_mode("Select")
 
 
+    def rend_stable(self):
 
 
+        boole, liste = self.canvas.graphe.est_stable()
+        n = 0
+        if boole :
+            good = QMessageBox()
+            good.setText("Ce graphe est stable")
+            good.exec()
+            #print("Ce graphe est stable")
+
+        else :
+
+            reponse = QMessageBox.question(self, "Stabilité", "Voulez-vous rendre ce graphe stable ?" )
+            if reponse == QMessageBox.Yes:
+
+                while not boole :
+                    n+=1
+                    g=self.canvas.graphe
+                    g.devenir_stable(liste)
+                    self.import_graph(g)                   
+                    #time.sleep(2)
+                    boole, liste = self.canvas.graphe.est_stable()
+                    if n>5:
+                        break
 
         
+                if boole :
+                    good = QMessageBox()
+                    good.setText("Ce graphe est stable")
+                    good.exec()
+                    #print("Ce graphe est stable")
+                else:
+                    bad = QMessageBox()
+                    bad.setText("Impossible de rendre ce graphe stable")
+                    bad.exec()
+                    #print("Impossible de rendre ce graphe stable")
 
 
     ##############
