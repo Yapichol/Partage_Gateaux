@@ -36,8 +36,11 @@ class Canvas(QWidget):
 		self.dicLigne = {}
 		for i in self.graphe.noeuds :
 			self.dicNoeuds[i[0]] = QPoint(0, 0)
-		for i in self.graphe.arcs :
-			self.dicLigne[i] = 0
+		for n1,n2 in self.graphe.arcs :
+			if ((n1,n2) in self.graphe.partage) or ((n2,n1) in self.graphe.partage):
+				self.dicLigne[(n1,n2)] = 1
+			else :
+				self.dicLigne[(n1,n2)] = 0
 		repartieAuto = True
 		if repartieAuto :
 			roue = 0
@@ -156,17 +159,16 @@ class Canvas(QWidget):
 				painter.drawEllipse(valeur.x(), valeur.y(), self.tailleNoeud, self.tailleNoeud)
 				painter.drawText(valeur.x(), valeur.y(), self.tailleNoeud, self.tailleNoeud, Qt.AlignCenter, cle)
 				val = self.graphe.get_val_noeud(cle)
-				if val != 0 :
-					pen2 = QPen(Qt.red)
-					pen2.setWidth(3)
-					painter.setPen(pen2)
-					if len(str(val)) > 10:
-						painter.drawText(valeur.x() - self.tailleNoeud, valeur.y() - 15, 3 * self.tailleNoeud, 15, Qt.AlignLeft, str(val))
-					else :
-						painter.drawText(valeur.x() - self.tailleNoeud, valeur.y() - 15, 3 * self.tailleNoeud, 15, Qt.AlignCenter, str(val))
-					pen = QPen(Qt.black)
-					pen.setWidth(3)
-					painter.setPen(pen)
+				pen2 = QPen(Qt.red)
+				pen2.setWidth(3)
+				painter.setPen(pen2)
+				if len(str(val)) > 10:
+					painter.drawText(valeur.x() - self.tailleNoeud, valeur.y() - 15, 3 * self.tailleNoeud, 15, Qt.AlignLeft, str(val))
+				else :
+					painter.drawText(valeur.x() - self.tailleNoeud, valeur.y() - 15, 3 * self.tailleNoeud, 15, Qt.AlignCenter, str(val))
+				pen = QPen(Qt.black)
+				pen.setWidth(3)
+				painter.setPen(pen)
 
 
 
