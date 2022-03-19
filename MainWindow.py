@@ -234,7 +234,8 @@ class MainWindow(QMainWindow):
                     n+=1
                     g=self.canvas.graphe
                     g.devenir_stable(liste)
-                    self.import_graph(g)                   
+                    #self.import_graph(g)
+                    self.canvas.maj_graph(g)
                     #time.sleep(2)
                     boole, liste = self.canvas.graphe.est_stable()
                     if n>5:
