@@ -14,6 +14,7 @@ class Canvas(QWidget):
 		self.dicNoeuds = {}
 		self.dicLigne = {}
 		self.graphe = None
+		self.pointer = None
         
 		self.setMinimumSize(800, 500)
 		self.posCanvas = (0,0)
@@ -82,7 +83,21 @@ class Canvas(QWidget):
 				roue += 1
 		self.update()
 	
-	
+	def maj_graph(self, graph):
+		self.graphe = graph
+		for i in self.graphe.noeuds :
+			nom, val = i
+			if nom not in self.dicNoeuds :
+				self.dicNoeuds[nom] = QPoint(0, 0)
+		for i in self.graphe.arcs :
+			n1, n2 = i
+			if ((n1, n2) in self.graphe.partage) or ((n2, n1) in self.graphe.partage) :
+				self.dicLigne[i] = 1
+			else :
+				self.dicLigne[i] = 0
+				
+		self.update()
+
 	def set_mode(self, mode):
 		self.mode = mode
 	
@@ -90,6 +105,7 @@ class Canvas(QWidget):
 		pointpress = event.pos()
 		if self.mode == "Draw" :
 			self.cursorPosPress = QPoint(pointpress.x() - self.posCanvas[0], pointpress.y() - self.posCanvas[1])
+			self.pointer = (QLineF(self.cursorPosPress.x() - 4, self.cursorPosPress.y(), self.cursorPosPress.x() + 4, self.cursorPosPress.y()), QLineF(self.cursorPosPress.x(), self.cursorPosPress.y() - 4, self.cursorPosPress.x(), self.cursorPosPress.y() + 4))
 		#elif self.mode == "Move" :
 		#	self.cursorPosPress = QPoint(pointpress.x() - self.posCanvas[0], pointpress.y() - self.posCanvas[1])
 		#	self.cursorPosRelease = self.cursorPosPress
@@ -109,6 +125,17 @@ class Canvas(QWidget):
 		pointrelease = event.pos()
 		if self.mode == "Draw" :
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
+			self.pointer = (QLineF(self.cursorPosRelease.x() - 4, self.cursorPosRelease.y(), self.cursorPosRelease.x() + 4, self.cursorPosRelease.y()), QLineF(self.cursorPosRelease.x(), self.cursorPosRelease.y() - 4, self.cursorPosRelease.x(), self.cursorPosRelease.y() + 4))
+			for cle, valeur in self.dicLigne.items():
+				n1, n2 = cle
+				ligne = QLineF(QPoint(self.dicNoeuds[n1].x() + int(self.tailleNoeud / 2), self.dicNoeuds[n1].y() + int(self.tailleNoeud / 2)), QPoint(self.dicNoeuds[n2].x() + int(self.tailleNoeud / 2), self.dicNoeuds[n2].y() + int(self.tailleNoeud / 2)))
+				intersection = QPointF(0, 0)
+				if (ligne.intersect(self.pointer[0], intersection) == 1) or (ligne.intersect(self.pointer[1], intersection) == 1) :
+					print(cle)
+					break
+					#print("INTERSECTION :(", intersection.x()," , ", intersection.y(), ")")
+					#print("POINTEUR :(", self.cursorPosRelease.x()," , ", self.cursorPosRelease.y(), ")")
+			#self.pointer = None
 		#elif self.mode == "Move" :
 		#	self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
 		#	self.posCanvas = (self.posCanvas[0] + self.cursorPosRelease.x() - self.cursorPosPress.x(), self.posCanvas[1] + self.cursorPosRelease.y() - self.cursorPosPress.y())
@@ -121,6 +148,8 @@ class Canvas(QWidget):
 		pointrelease = event.pos()
 		if self.mode == "Draw" :
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
+			self.pointer = (QLineF(self.cursorPosRelease.x() - 4, self.cursorPosRelease.y(), self.cursorPosRelease.x() + 4, self.cursorPosRelease.y()), QLineF(self.cursorPosRelease.x(), self.cursorPosRelease.y() - 4, self.cursorPosRelease.x(), self.cursorPosRelease.y() + 4))
+
 		#elif self.mode == "Move" :
 		#	self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
 		#	self.posCanvas = (self.posCanvas[0] + self.cursorPosRelease.x() - self.cursorPosPress.x(), self.posCanvas[1] + self.cursorPosRelease.y() - self.cursorPosPress.y())
@@ -169,6 +198,10 @@ class Canvas(QWidget):
 				pen = QPen(Qt.black)
 				pen.setWidth(3)
 				painter.setPen(pen)
+		"""if self.mode == "Draw" :
+			painter.drawLine(self.pointer[0])
+			painter.drawLine(self.pointer[1])"""
+					
 
 
 
