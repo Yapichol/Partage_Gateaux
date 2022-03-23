@@ -120,12 +120,18 @@ class MainWindow(QMainWindow):
             g.ajouter_noeud(lettre)
             g.modifier_gain(lettre,valeur)
 
-        for i in range(nbsommets,len(doc)):
+        for i in range(nbsommets,nbsommets+nbarcs):
             arc = str(doc[i])
             arc=arc.replace(' ','')
             arc=arc.replace(',','')
             g.ajouter_arc(arc[0],arc[1])
-
+		
+        for i in range(nbsommets+nbarcs,len(doc)):
+            partage = str(doc[i])
+            partage=partage.replace(' ','')
+            partage=partage.replace(',','')
+            g.partage.append((partage[0],partage[1]))
+		
         self.import_graph(g)
 
     def import_graph(self, graphe):
@@ -151,6 +157,11 @@ class MainWindow(QMainWindow):
             for i in self.canvas.graphe.arcs:
                 lettre1,lettre2 = i
                 f.write(lettre1+','+lettre2+'\n')
+
+            for i in self.canvas.graphe.partage:
+                lettre1,lettre2 = i
+                f.write(lettre1+','+lettre2+'\n')
+
         
     def alea(self):
 
