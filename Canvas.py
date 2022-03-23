@@ -17,7 +17,7 @@ class Canvas(QWidget):
 		self.pointer = None
         
 		self.setMinimumSize(800, 500)
-		self.posCanvas = (0,0)
+		self.posCanvas = (300, 150)
 		self.cursorPosPress = None
 		self.cursorPosRelease = None
 		self.mode = "Move"              # mode 
