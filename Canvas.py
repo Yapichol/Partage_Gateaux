@@ -2,10 +2,13 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from Graphe import *
+from ArcDialog import *
 import math
 
 
 class Canvas(QWidget):
+	
+	
 	
 	def __init__(self, parent = None):
 		print("class Canvas")
@@ -25,11 +28,16 @@ class Canvas(QWidget):
 		self.tailleNoeud = 35
 	
 	
+	
 	def get_listElem(self):
 		return self.listElem
 	
+	
+	
 	def reset(self):
 		print("reset")
+	
+	
 	
 	def imp_g(self, graphe):
 		self.graphe = graphe
@@ -83,6 +91,8 @@ class Canvas(QWidget):
 				roue += 1
 		self.update()
 	
+	
+	
 	def maj_graph(self, graph):
 		self.graphe = graph
 		for i in self.graphe.noeuds :
@@ -97,65 +107,32 @@ class Canvas(QWidget):
 				self.dicLigne[i] = 0
 				
 		self.update()
-		
+	
+	
+	
 	def modif_partage(self, arc) :
-		val_noeud1 = 0
-		val_noeud2 = 0
-		if (val_noeud1 + val_noeud2 > 0) :
-			self.graphe.modifier_partage(arc, val_noeud1, val_noeud2)
-		else :
-			self.graphe.supprimer_partage(arc)
+		val_noeud1 = self.graphe.get_valeur(arc[0])
+		val_noeud2 = self.graphe.get_valeur(arc[1])
+		dialo = ArcDialog(arc, val_noeud1, val_noeud2, parent = self)
+		dialo.accepted.connect(self.arcDialoAccepted)
+		dialo.exec_()
 		self.maj_graph(self.graphe)
-		"""
-		if (arc not in self.graphe.arcs) and ((arc[1], arc[0]) not in self.graph.arcs):
-			print("Arc inexistant")
-			return -1
-		poidarc = 1                  # A MODIFIER LORSQUE LES ARCS AURONT DES POIDS DIFFERENTS
-		#                BOITE DE DIALOGUE POUR OBTENIR LA VALEUR
-		val_noeud1 = self.graphe.get_valeur(arc[1])
-		val_noeud2 = self.graphe.get_valeur(arc[0])
-		if val_noeud1 + val_noeud2 == 0 :
-			val_n1 = 0
-			val_n2 = 0
-			if arc in self.graphe.partage :
-				self.graphe.partage.remove(arc)
-			elif (arc[1], arc[0]) in self.graphe.partage :
-				self.graphe.partage.remove((arc[1], arc[0]))
-			self.dicLigne[arc] = 0
-
+		
+		
+	def arcDialoAccepted(self, valeur) :
+		#print("pouaf")
+		#print(int(valeur["val1"]) + int(valeur["val2"]))
+		#print(valeur["arc"])
+		if (((valeur["val1"]) + (valeur["val2"])) > 0) :
+			self.graphe.modifier_partage(valeur["arc"], (valeur["val1"]), (valeur["val2"]))
 		else :
-			val_n1 = (val_noeud1 / (val_noeud1 + val_noeud2)) * poidarc
-			val_n2 = (val_noeud2 / (val_noeud1 + val_noeud2)) * poidarc
-			change = (-1, -1)
-			for i in range(len(self.graphe.partage)):
-				n1, n2 = self.graphe.partage[i]
-				if (arc[0] == n1 and arc[1] != n2) or (arc[1] == n1 and arc[0] != n2) or (arc[0] != n1 and arc[1] == n2) or (arc[1] != n1 and arc[0] == n2):
-					if change[0] == -1 :
-						change = (i, -1)
-					else :
-						ch0 = change[0]
-						change = (ch0, i)
-			print(self.graphe.partage)
-			print(change)
-			if change[0] > -1 :
-				self.graphe.modifier_gain(self.graphe.partage[change[0]][0], 0)
-				self.graphe.modifier_gain(self.graphe.partage[change[0]][1], 0)
-				self.dicLigne[self.graphe.partage[change[0]]] = 0
-				self.graphe.partage[change[0]] = arc
-				if change[1] > -1 :
-					self.graphe.modifier_gain(self.graphe.partage[change[1]][0], 0)
-					self.graphe.modifier_gain(self.graphe.partage[change[1]][1], 0)
-					self.dicLigne[self.graphe.partage[change[1]]] = 0
-					self.graphe.partage.pop(change[1])
-			elif (arc not in self.graphe.partage) and ((arc[1], arc[0]) not in self.graphe.partage) :
-				self.graphe.partage.append(arc)
-			self.dicLigne[arc] = 1
-			self.graphe.modifier_gain(arc[0], val_n1)
-			self.graphe.modifier_gain(arc[1], val_n2)"""
-
-
+			self.graphe.supprimer_partage(valeur["arc"])
+	
+	
 	def set_mode(self, mode):
 		self.mode = mode
+	
+	
 	
 	def mousePressEvent(self, event):
 		pointpress = event.pos()
@@ -177,6 +154,8 @@ class Canvas(QWidget):
 						break
 		self.update()
 	
+	
+	
 	def mouseReleaseEvent(self, event):
 		pointrelease = event.pos()
 		if self.mode == "Draw" :
@@ -188,14 +167,14 @@ class Canvas(QWidget):
 				n1, n2 = cle
 				ligne = QLineF(QPoint(self.dicNoeuds[n1].x() + int(self.tailleNoeud / 2), self.dicNoeuds[n1].y() + int(self.tailleNoeud / 2)), QPoint(self.dicNoeuds[n2].x() + int(self.tailleNoeud / 2), self.dicNoeuds[n2].y() + int(self.tailleNoeud / 2)))
 				if (ligne.intersect(self.pointer[0], intersection) == 1) or (ligne.intersect(self.pointer[1], intersection) == 1) :
-					print(cle)
+					#print(cle)
 					arc = cle
 					break
 					#print("INTERSECTION :(", intersection.x()," , ", intersection.y(), ")")
 					#print("POINTEUR :(", self.cursorPosRelease.x()," , ", self.cursorPosRelease.y(), ")")
 			if arc != (".", ".") :
 				self.modif_partage(arc)
-				print("Fin 2")
+				#print("Fin 2")
 			#self.pointer = None
 		#elif self.mode == "Move" :
 		#	self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
@@ -204,6 +183,8 @@ class Canvas(QWidget):
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
 			self.listSelected = []
 		self.update()
+	
+	
 	
 	def mouseMoveEvent(self, event):
 		pointrelease = event.pos()
@@ -224,6 +205,8 @@ class Canvas(QWidget):
 			else :
 				self.posCanvas = (self.posCanvas[0] + self.cursorPosRelease.x() - self.cursorPosPress.x(), self.posCanvas[1] + self.cursorPosRelease.y() - self.cursorPosPress.y())
 		self.update()
+	
+	
 	
 	def paintEvent(self, event):
 		painter = QPainter(self)
