@@ -142,7 +142,63 @@ class Graphe :
                 if v!=valeur:
                     self.noeuds.append((nom,valeur))
                     self.noeuds.remove(n)
+	
     
+    
+    def modifier_partage(self, arc, val_noeud1, val_noeud2):
+        """Cree un partage entre les noeuds concernes par l'arc passe en parametre,
+        val_noeud1 est attribue au premier noeud du de l'arc et val_noeud2 au second,
+        le partage est mis a niveau par rapport au poids de l'arc"""
+        if (arc not in self.arcs) and ((arc[1], arc[0]) not in self.arcs) :
+            print("Arc inexistant")
+            return -1
+        poidarc = 1
+        val_n1 = 0
+        val_n2 = 0
+        if val_noeud1 + val_noeud2 > 0 :
+            val_n1 = (val_noeud1 / (val_noeud1 + val_noeud2)) * poidarc
+            val_n2 = (val_noeud2 / (val_noeud1 + val_noeud2)) * poidarc
+        change = (-1, -1)
+        for i in range(len(self.partage)) :
+            n1, n2 = self.partage[i]
+            if (arc[0] == n1 and arc[1] != n2) or (arc[1] == n1 and arc[0] != n2) or (arc[0] != n1 and arc[1] == n2) or (arc[1] != n1 and arc[0] == n2):
+                if change[0] == -1 :
+                    change = (i, -1)
+                else :
+                    ch0 = change[0]
+                    change = (ch0, i)
+        #print(self.partage)
+        #print(change)
+        if change[0] > -1 :
+            self.modifier_gain(self.partage[change[0]][0], 0)
+            self.modifier_gain(self.partage[change[0]][1], 0)
+            #self.dicLigne[self.graphe.partage[change[0]]] = 0
+            self.partage[change[0]] = arc
+            if change[1] > -1 :
+                self.modifier_gain(self.partage[change[1]][0], 0)
+                self.modifier_gain(self.partage[change[1]][1], 0)
+                #self.dicLigne[self.partage[change[1]]] = 0
+                self.partage.pop(change[1])
+        elif (arc not in self.partage) and ((arc[1], arc[0]) not in self.partage) :
+            self.partage.append(arc)
+        #self.dicLigne[arc] = 1
+        self.modifier_gain(arc[0], val_n1)
+        self.modifier_gain(arc[1], val_n2)
+    
+	
+	
+    def supprimer_partage(self, arc):
+        if (arc in self.partage) :
+            self.modifier_gain(arc[0], 0)
+            self.modifier_gain(arc[1], 0)
+            self.partage.remove(arc)
+        if(arc[1], arc[0]) in self.partage :
+            self.modifier_gain(arc[0], 0)
+            self.modifier_gain(arc[1], 0)
+            self.partage.remove((arc[1], arc[0]))
+	
+	
+	
     def get_val_noeud(self, noeud):
         for i in self.noeuds:
             if i[0] == noeud :
