@@ -26,6 +26,7 @@ class Canvas(QWidget):
 		self.mode = "Move"              # mode 
 		self.listSelected = []          # liste des elements selectionnes
 		self.tailleNoeud = 35
+		self.taillePointeur = 5
 	
 	
 	
@@ -138,7 +139,7 @@ class Canvas(QWidget):
 		pointpress = event.pos()
 		if self.mode == "Draw" :
 			self.cursorPosPress = QPoint(pointpress.x() - self.posCanvas[0], pointpress.y() - self.posCanvas[1])
-			self.pointer = (QLineF(self.cursorPosPress.x() - 4, self.cursorPosPress.y(), self.cursorPosPress.x() + 4, self.cursorPosPress.y()), QLineF(self.cursorPosPress.x(), self.cursorPosPress.y() - 4, self.cursorPosPress.x(), self.cursorPosPress.y() + 4))
+			self.pointer = (QLineF(self.cursorPosPress.x() - self.taillePointeur, self.cursorPosPress.y(), self.cursorPosPress.x() + self.taillePointeur, self.cursorPosPress.y()), QLineF(self.cursorPosPress.x(), self.cursorPosPress.y() - self.taillePointeur, self.cursorPosPress.x(), self.cursorPosPress.y() + self.taillePointeur))
 		#elif self.mode == "Move" :
 		#	self.cursorPosPress = QPoint(pointpress.x() - self.posCanvas[0], pointpress.y() - self.posCanvas[1])
 		#	self.cursorPosRelease = self.cursorPosPress
@@ -160,7 +161,7 @@ class Canvas(QWidget):
 		pointrelease = event.pos()
 		if self.mode == "Draw" :
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
-			self.pointer = (QLineF(self.cursorPosRelease.x() - 4, self.cursorPosRelease.y(), self.cursorPosRelease.x() + 4, self.cursorPosRelease.y()), QLineF(self.cursorPosRelease.x(), self.cursorPosRelease.y() - 4, self.cursorPosRelease.x(), self.cursorPosRelease.y() + 4))
+			self.pointer = (QLineF(self.cursorPosRelease.x() - self.taillePointeur, self.cursorPosRelease.y(), self.cursorPosRelease.x() + self.taillePointeur, self.cursorPosRelease.y()), QLineF(self.cursorPosRelease.x(), self.cursorPosRelease.y() - self.taillePointeur, self.cursorPosRelease.x(), self.cursorPosRelease.y() + self.taillePointeur))
 			intersection = QPointF(0, 0)
 			arc = (".", ".")
 			for cle, valeur in self.dicLigne.items():
@@ -190,7 +191,7 @@ class Canvas(QWidget):
 		pointrelease = event.pos()
 		if self.mode == "Draw" :
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
-			self.pointer = (QLineF(self.cursorPosRelease.x() - 4, self.cursorPosRelease.y(), self.cursorPosRelease.x() + 4, self.cursorPosRelease.y()), QLineF(self.cursorPosRelease.x(), self.cursorPosRelease.y() - 4, self.cursorPosRelease.x(), self.cursorPosRelease.y() + 4))
+			self.pointer = (QLineF(self.cursorPosRelease.x() - self.taillePointeur, self.cursorPosRelease.y(), self.cursorPosRelease.x() + self.taillePointeur, self.cursorPosRelease.y()), QLineF(self.cursorPosRelease.x(), self.cursorPosRelease.y() - self.taillePointeur, self.cursorPosRelease.x(), self.cursorPosRelease.y() + self.taillePointeur))
 
 		#elif self.mode == "Move" :
 		#	self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
