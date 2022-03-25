@@ -15,7 +15,7 @@ class Graphe :
             nom,val = n
             if nom==noeud:
                 return val
-        print("Le noeud n'existe pas")
+        #print("Le noeud n'existe pas")
         
     def get_voisin(self,noeud):
         """Retourne la liste des voisins du noeud"""
@@ -123,7 +123,7 @@ class Graphe :
                 if n1==nom or n2==nom:
                     seul = False
             if seul:
-                print(nom,"seul")
+                #print(nom,"seul")
                 if n!=self.noeuds[0]:
                     n0,_ = self.noeuds[0]
                     self.ajouter_arc(nom,n0)
@@ -191,76 +191,57 @@ class Graphe :
                     pas_stable.append(n1)
                     pas_stable.append(n2)
         return stable, list(set(pas_stable))
-
     
     def devenir_stable(self,pas_stable):
-        """Part du graphe passé en argument ayant un partage non stable et 
-        modifie les valeurs dans celui ci pour que le partage devienne stable"""
-        stable = False
-        i = 0
-        while not stable and i<10:
-            #pour chaque noeud n'etant pas stable, on cree un arc et donc un 
-            #partage entre ce noeud et un autre noeud non stable, qui lui 
-            #permettra d'obtenir une valeur plus elevee
-            while pas_stable:
-                n1 = pas_stable.pop(0)
-                n2,offre = self.offre_ext(n1,pas_stable)
-                v1 = self.get_valeur(n1)
-                v2 = self.get_valeur(n2)
+        
+        while pas_stable:
+            n1 = pas_stable.pop(0)
+            n2,offre = self.offre_ext(n1,pas_stable)
+            v1 = self.get_valeur(n1)
+            v2 = self.get_valeur(n2)
+            
+            if n2!=None and ((n1,n2) not in self.partage) and ((n2,n1) not in self.partage):
+             
+                pas_stable.remove(n2)
+                #on supprime les partages qui existaient entre n1 et 
+                #les autres noeuds du graphe
+                for p in self.partage:
+                    p1,p2 = p
+                    if n1==p1:
+                        self.partage.remove(p)
+                        self.modifier_gain(p2,0)
+                        break
+                    if n1==p2:
+                        self.partage.remove(p)
+                        self.modifier_gain(p1,0)
+                        break
+                #on supprime les partages qui existaient entre n2 et 
+                #les autres noeuds du graphe
+                for p in self.partage:
+                    p1,p2 = p
+                    if n2==p1:
+                        self.partage.remove(p)
+                        self.modifier_gain(p2,0)
+                        break
+                    if n2==p2:
+                        self.partage.remove(p)
+                        self.modifier_gain(p1,0)
+                        break
                 
-                if n2!=None:
-                 
-                    pas_stable.remove(n2)
-                    #on supprime les partages qui existaient entre n1 et 
-                    #les autres noeuds du graphe
-                    for p in self.partage:
-                        p1,p2 = p
-                        if n1==p1:
-                            self.partage.remove(p)
-                            self.modifier_gain(p2,0)
-                            break
-                        if n1==p2:
-                            self.partage.remove(p)
-                            self.modifier_gain(p1,0)
-                            break
-                    #on supprime les partages qui existaient entre n2 et 
-                    #les autres noeuds du graphe
-                    for p in self.partage:
-                        p1,p2 = p
-                        if n2==p1:
-                            self.partage.remove(p)
-                            self.modifier_gain(p2,0)
-                            break
-                        if n2==p2:
-                            self.partage.remove(p)
-                            self.modifier_gain(p1,0)
-                            break
-                    
-                    #on considère que si un noeud arrive a obtenir plus que
-                    #0.99 il arrivera à obtenir 1
-                    v1 = v1+((1-v1-v2)*0.5)
-                    v2 = 1-v1
-                    if v1<=0.01:
-                        self.modifier_gain(n1,0)
-                        self.modifier_gain(n2,1)
-                    elif v2<=0.01:
-                        self.modifier_gain(n1,1)
-                        self.modifier_gain(n2,0)
-                    else:
-                        self.modifier_gain(n1,v1)
-                        self.modifier_gain(n2,v2)
-                    self.partage.append((n1,n2))
-                    #print("noeuds apres modif:",self.noeuds)
-                    
-
-            stable,pas_stable = self.est_stable()
-            i += 1
-        if i<10:
-            print("Le partage est stable")
-        else:
-            print("Le partage n'est toujours pas stable")
-        self.afficher_graphe()
-    
+                #on considère que si un noeud arrive a obtenir plus que
+                #0.99 il arrivera à obtenir 1
+                v1 = v1+((1-v1-v2)*0.5)
+                v2 = 1-v1
+                if v1<=0.01:
+                    self.modifier_gain(n1,0)
+                    self.modifier_gain(n2,1)
+                elif v2<=0.01:
+                    self.modifier_gain(n1,1)
+                    self.modifier_gain(n2,0)
+                else:
+                    self.modifier_gain(n1,v1)
+                    self.modifier_gain(n2,v2)
+                self.partage.append((n1,n2))
     
                        
     def affiche(self):

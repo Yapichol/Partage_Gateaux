@@ -155,7 +155,7 @@ class MainWindow(QMainWindow):
     def alea(self):
 
         g = Graphe()
-        g.generer_graphe(6,0.2)
+        g.generer_graphe(5,0.1)
         g.partage_aleatoire()
         self.import_graph(g)
 
@@ -218,6 +218,7 @@ class MainWindow(QMainWindow):
 
 
         boole, liste = self.canvas.graphe.est_stable()
+        iter_max = 100
         n = 0
         if boole :
             good = QMessageBox()
@@ -229,22 +230,23 @@ class MainWindow(QMainWindow):
 
             reponse = QMessageBox.question(self, "Stabilité", "Voulez-vous rendre ce graphe stable ?" )
             if reponse == QMessageBox.Yes:
-
+                
                 while not boole :
                     n+=1
                     g=self.canvas.graphe
+                    #print("partage: ",g.partage)
                     g.devenir_stable(liste)
                     #self.import_graph(g)
                     self.canvas.maj_graph(g)
-                    #time.sleep(2)
-                    boole, liste = self.canvas.graphe.est_stable()
-                    if n>5:
+                    #time.sleep(1)
+                    boole, liste = g.est_stable()
+                    if n>iter_max:
                         break
-
+                
         
                 if boole :
                     good = QMessageBox()
-                    good.setText("Ce graphe est stable")
+                    good.setText("Ce graphe est stable en "+str(n)+" itérations.")
                     good.exec()
                     #print("Ce graphe est stable")
                 else:
