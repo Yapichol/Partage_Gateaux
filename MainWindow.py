@@ -86,13 +86,15 @@ class MainWindow(QMainWindow):
         actSelect = modeToolBar.addAction( QIcon(":/icons/select.png"), "&Select", self.select)
         actZoomin = modeToolBar.addAction( QIcon(":/icons/zoom-in.png"), "&Zoomin", self.zoomin)
         actZoomout = modeToolBar.addAction( QIcon(":/icons/zoom-out.png"), "&Zoomout", self.zoomout)
-
+        
+        
         self.canvas = Canvas()
         v_layout = QVBoxLayout()
         v_layout.addWidget(self.canvas)
         container = QWidget()
         container.setLayout(v_layout)
         self.setCentralWidget(container)
+        
 
 
     ##############
@@ -125,7 +127,7 @@ class MainWindow(QMainWindow):
             arc=arc.replace(' ','')
             arc=arc.replace(',','')
             g.ajouter_arc(arc[0],arc[1])
-		
+        
         for i in range(nbsommets+nbarcs,len(doc)):
             partage = str(doc[i])
             partage=partage.replace(' ','')
@@ -226,8 +228,8 @@ class MainWindow(QMainWindow):
 
 
     def rend_stable(self):
-
-
+        affiche = True
+       
         boole, liste = self.canvas.graphe.est_stable()
         iter_max = 100
         n = 0
@@ -249,12 +251,15 @@ class MainWindow(QMainWindow):
                     g.devenir_stable(liste)
                     #self.import_graph(g)
                     self.canvas.maj_graph(g)
-                    #time.sleep(1)
+                    if affiche:
+                        self.canvas.repaint()
+                        loop = QEventLoop()
+                        QTimer.singleShot(2000, loop.quit)
+                        loop.exec_()
                     boole, liste = g.est_stable()
                     if n>iter_max:
                         break
-                
-        
+                        
                 if boole :
                     good = QMessageBox()
                     good.setText("Ce graphe est stable en "+str(n)+" itérations.")
