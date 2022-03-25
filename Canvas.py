@@ -27,6 +27,7 @@ class Canvas(QWidget):
 		self.listSelected = []          # liste des elements selectionnes
 		self.tailleNoeud = 35
 		self.taillePointeur = 5
+		self.constructArc = None
 	
 	
 	
@@ -130,6 +131,12 @@ class Canvas(QWidget):
 			self.graphe.supprimer_partage(valeur["arc"])
 	
 	
+	
+	def ajouterArc(self, arc) :
+		self.graphe.ajouter_arc(arc[0], arc[1])
+		self.maj_graph(self.graphe)
+	
+	
 	def set_mode(self, mode):
 		self.mode = mode
 	
@@ -137,7 +144,7 @@ class Canvas(QWidget):
 	
 	def mousePressEvent(self, event):
 		pointpress = event.pos()
-		if self.mode == "Draw" :
+		if self.mode == "Select" :
 			self.cursorPosPress = QPoint(pointpress.x() - self.posCanvas[0], pointpress.y() - self.posCanvas[1])
 			self.pointer = (QLineF(self.cursorPosPress.x() - self.taillePointeur, self.cursorPosPress.y(), self.cursorPosPress.x() + self.taillePointeur, self.cursorPosPress.y()), QLineF(self.cursorPosPress.x(), self.cursorPosPress.y() - self.taillePointeur, self.cursorPosPress.x(), self.cursorPosPress.y() + self.taillePointeur))
 		#elif self.mode == "Move" :
@@ -153,13 +160,23 @@ class Canvas(QWidget):
 					if rec.contains(self.cursorPosPress.x(), self.cursorPosPress.y()) :
 						self.listSelected.append(cle)
 						break
+		elif self.mode == "Draw" :
+			self.constructArc = None
+			self.cursorPosPress = QPoint(pointpress.x() - self.posCanvas[0], pointpress.y() - self.posCanvas[1])
+			self.cursorPosRelease = self.cursorPosPress
+			if self.dicNoeuds != {} :
+				for cle, valeur in self.dicNoeuds.items():
+					rec = QRect(valeur.x(), valeur.y(), self.tailleNoeud, self.tailleNoeud)
+					if rec.contains(self.cursorPosPress.x(), self.cursorPosPress.y()) :
+						self.constructArc = (cle, QPoint(valeur.x() + int(self.tailleNoeud / 2), valeur.y() + int(self.tailleNoeud / 2)))
+						break
 		self.update()
 	
 	
 	
 	def mouseReleaseEvent(self, event):
 		pointrelease = event.pos()
-		if self.mode == "Draw" :
+		if self.mode == "Select" :
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
 			self.pointer = (QLineF(self.cursorPosRelease.x() - self.taillePointeur, self.cursorPosRelease.y(), self.cursorPosRelease.x() + self.taillePointeur, self.cursorPosRelease.y()), QLineF(self.cursorPosRelease.x(), self.cursorPosRelease.y() - self.taillePointeur, self.cursorPosRelease.x(), self.cursorPosRelease.y() + self.taillePointeur))
 			intersection = QPointF(0, 0)
@@ -183,13 +200,25 @@ class Canvas(QWidget):
 		elif self.mode == "Move" :
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
 			self.listSelected = []
+		elif self.mode == "Draw" :
+			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
+			if self.constructArc != None :
+				arc = ("", "")
+				if self.dicNoeuds != {} :
+					for cle, valeur in self.dicNoeuds.items():
+						rec = QRect(valeur.x(), valeur.y(), self.tailleNoeud, self.tailleNoeud)
+						if rec.contains(self.cursorPosRelease.x(), self.cursorPosRelease.y()) :
+							arc = (self.constructArc[0], cle)
+							self.ajouterArc(arc)
+							break
+			self.constructArc = None
 		self.update()
 	
 	
 	
 	def mouseMoveEvent(self, event):
 		pointrelease = event.pos()
-		if self.mode == "Draw" :
+		if self.mode == "Select" :
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
 			self.pointer = (QLineF(self.cursorPosRelease.x() - self.taillePointeur, self.cursorPosRelease.y(), self.cursorPosRelease.x() + self.taillePointeur, self.cursorPosRelease.y()), QLineF(self.cursorPosRelease.x(), self.cursorPosRelease.y() - self.taillePointeur, self.cursorPosRelease.x(), self.cursorPosRelease.y() + self.taillePointeur))
 
@@ -205,6 +234,11 @@ class Canvas(QWidget):
 					self.dicNoeuds[i] = QPoint(pos.x() + self.cursorPosRelease.x() - ancienPos.x(), pos.y() + self.cursorPosRelease.y() - ancienPos.y())
 			else :
 				self.posCanvas = (self.posCanvas[0] + self.cursorPosRelease.x() - self.cursorPosPress.x(), self.posCanvas[1] + self.cursorPosRelease.y() - self.cursorPosPress.y())
+		elif self.mode == "Draw" :
+			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
+			if self.constructArc != None :
+				dep = self.constructArc[0]
+				self.constructArc = (dep, self.cursorPosRelease)
 		self.update()
 	
 	
@@ -227,6 +261,15 @@ class Canvas(QWidget):
 					pen = QPen(Qt.black)
 					pen.setWidth(3)
 					painter.setPen(pen)
+		if self.mode == "Draw" :
+			if self.constructArc != None :
+				pen = QPen(Qt.blue)
+				pen.setWidth(3)
+				painter.setPen(pen)
+				painter.drawLine(QPoint(self.dicNoeuds[self.constructArc[0]].x() + int(self.tailleNoeud / 2), self.dicNoeuds[self.constructArc[0]].y() + int(self.tailleNoeud / 2)), self.constructArc[1])
+				pen = QPen(Qt.black)
+				pen.setWidth(3)
+				painter.setPen(pen)
 		for cle, valeur in self.dicNoeuds.items() :
 			painter.setBrush(Qt.white)
 			if cle != None or valeur != None :
