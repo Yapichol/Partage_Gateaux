@@ -228,7 +228,7 @@ class MainWindow(QMainWindow):
 
 
     def rend_stable(self):
-        affiche = True
+        affiche = False
        
         boole, liste = self.canvas.graphe.est_stable()
         iter_max = 100
@@ -243,7 +243,10 @@ class MainWindow(QMainWindow):
 
             reponse = QMessageBox.question(self, "Stabilité", "Voulez-vous rendre ce graphe stable ?" )
             if reponse == QMessageBox.Yes:
-                
+                affichage = QMessageBox.question(self, "Stabilité", "Voulez-vous afficher chaque itération?" )
+                if affichage == QMessageBox.Yes:
+                    affiche = True
+                    
                 while not boole :
                     n+=1
                     g=self.canvas.graphe
