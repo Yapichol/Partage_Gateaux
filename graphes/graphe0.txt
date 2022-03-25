@@ -13,3 +13,5 @@ B,C
 D,B
 B,E
 D,A
+B,F
+A,C
