@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from PyQt5 import QtGui
 from Canvas import *
 from Graphe import *
 import resources
@@ -45,6 +46,13 @@ class MainWindow(QMainWindow):
         fileMenu.addAction(ex)
         ex.triggered.connect(self.exp)
 
+        exas = QAction(QIcon(),"Export as...",self)
+        exas.setShortcut(QKeySequence("Ctrl+R"))
+        exas.setToolTip("Export as")
+        exas.setStatusTip("Export as")
+        fileMenu.addAction(exas)
+        exas.triggered.connect(self.expas)
+
         alea = QAction(QIcon(),"Graphe Aléatoire...",self)
         alea.setShortcut(QKeySequence("Ctrl+A"))
         alea.setToolTip("Graphe Aléatoire")
@@ -80,13 +88,16 @@ class MainWindow(QMainWindow):
 
         modeToolBar = QToolBar("Navigation")
 
+
         self.addToolBar( modeToolBar )
         actMove = modeToolBar.addAction( QIcon(":/icons/move.png"), "&Move", self.move)
         actDraw = modeToolBar.addAction( QIcon(":/icons/draw.png"), "&Draw", self.draw)
         actSelect = modeToolBar.addAction( QIcon(":/icons/select.png"), "&Select", self.select)
         actZoomin = modeToolBar.addAction( QIcon(":/icons/zoom-in.png"), "&Zoomin", self.zoomin)
         actZoomout = modeToolBar.addAction( QIcon(":/icons/zoom-out.png"), "&Zoomout", self.zoomout)
-        
+        actPause = modeToolBar.addAction(QtGui.QIcon("./icons/pause.png"),"&Pause", self.pause)
+        actResume = modeToolBar.addAction(QtGui.QIcon("./icons/resume.png"),"&Resume", self.resume)
+        actStop = modeToolBar.addAction(QtGui.QIcon("./icons/stop.png"),"&Stop", self.stop)
         
         self.canvas = Canvas()
         v_layout = QVBoxLayout()
@@ -99,6 +110,7 @@ class MainWindow(QMainWindow):
 
     ##############
     def imp(self):
+        self.p = True
         print("Import...")
         g = Graphe()
         filename = QFileDialog.getOpenFileName(self,"Open File")
@@ -143,11 +155,12 @@ class MainWindow(QMainWindow):
     def exp(self):
         print("Export...")
 
+        
         path, dirs, files = next(os.walk("./graphes"))
         file_count = len(files)
-        
+            
         name = "graphe"+str(file_count)+".txt"
-
+        
         with open('graphes/'+name,'w') as f:
             f.write(str(len(self.canvas.graphe.noeuds))+'\n')
             f.write(str(len(self.canvas.graphe.arcs))+'\n')
@@ -164,11 +177,40 @@ class MainWindow(QMainWindow):
                 lettre1,lettre2 = i
                 f.write(lettre1+','+lettre2+'\n')
 
+            msg = QMessageBox()
+            msg.setText("Le graphe a bien été exporté")
+            msg.exec()  
+
+    def expas(self):
+        filename = QFileDialog.getSaveFileName(self,"Save File")	
+        fi,a = filename
+        print(filename)
+        if len(fi) >2 :
+			
+            with open(str(fi)+".txt","w") as f:
+                f.write(str(len(self.canvas.graphe.noeuds))+'\n')
+                f.write(str(len(self.canvas.graphe.arcs))+'\n')
+
+                for i in self.canvas.graphe.noeuds :
+                    lettre,valeur = i
+                    f.write(lettre+','+str(valeur)+'\n')
+
+                for i in self.canvas.graphe.arcs:
+                    lettre1,lettre2 = i
+                    f.write(lettre1+','+lettre2+'\n')
+
+                for i in self.canvas.graphe.partage:
+                    lettre1,lettre2 = i
+                    f.write(lettre1+','+lettre2+'\n')
+            
         
     def alea(self):
-
+        self.p = True
         g = Graphe()
-        g.generer_graphe(5,0.1)
+        #nbsommets = random.randint(2,10)
+        #arcs=random.uniform(0,0.5)
+        #g.generer_graphe(nbsommets,arcs)
+        g.generer_graphe(5,0.2)
         g.partage_aleatoire()
         self.import_graph(g)
 
@@ -206,6 +248,15 @@ class MainWindow(QMainWindow):
         print("Zoom out...")
         pass
 
+    def pause(self):
+        self.p = True
+
+    def stop(self):
+        self.s = True
+
+    def resume(self):
+        self.r = True
+
     def quit(self):
         print("Quit")
         self.close()
@@ -229,7 +280,9 @@ class MainWindow(QMainWindow):
 
     def rend_stable(self):
         affiche = False
-       
+        self.p = False
+        self.r = False
+        self.s = False
         boole, liste = self.canvas.graphe.est_stable()
         iter_max = 100
         n = 0
@@ -260,7 +313,18 @@ class MainWindow(QMainWindow):
                         QTimer.singleShot(2000, loop.quit)
                         loop.exec_()
                     boole, liste = g.est_stable()
-                    if n>iter_max:
+
+                    while self.p and not self.s:
+                        loop = QEventLoop()
+                        QTimer.singleShot(2000, loop.quit)
+                        loop.exec_()
+                        if self.r or self.s:
+                            self.r = False
+                            break
+                    self.p = False
+
+                    if n>iter_max or self.s:
+                        
                         break
                         
                 if boole :
@@ -268,11 +332,19 @@ class MainWindow(QMainWindow):
                     good.setText("Ce graphe est stable en "+str(n)+" itérations.")
                     good.exec()
                     #print("Ce graphe est stable")
-                else:
+                elif not self.s:
                     bad = QMessageBox()
                     bad.setText("Impossible de rendre ce graphe stable")
                     bad.exec()
                     #print("Impossible de rendre ce graphe stable")
+                else:
+                    self.s = False
+                    bad = QMessageBox()
+                    bad.setText("Processus arrêté")
+                    bad.exec()
 
 
     ##############
+
+
+
