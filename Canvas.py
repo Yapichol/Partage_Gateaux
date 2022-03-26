@@ -132,9 +132,27 @@ class Canvas(QWidget):
 	
 	
 	
+	def nouv_noeud(self, position) :
+		nom = ""
+		alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+		indiceLettre = 0
+		for i in alphabet :
+			nom = i
+			if nom not in self.dicNoeuds :
+				break
+		self.graphe.ajouter_noeud(nom)
+		if position == None :
+			self.dicNoeuds[nom] = QPoint(0, 0)
+		else :
+			self.dicNoeuds[nom] = QPoint(position.x() - int(self.tailleNoeud / 2), position.y() - int(self.tailleNoeud / 2))
+		self.maj_graph(self.graphe)
+	
+	
+	
 	def ajouterArc(self, arc) :
 		self.graphe.ajouter_arc(arc[0], arc[1])
 		self.maj_graph(self.graphe)
+	
 	
 	
 	def set_mode(self, mode):
@@ -211,7 +229,9 @@ class Canvas(QWidget):
 							arc = (self.constructArc[0], cle)
 							self.ajouterArc(arc)
 							break
-			self.constructArc = None
+				self.constructArc = None
+			else :
+				self.nouv_noeud(self.cursorPosRelease)
 		self.update()
 	
 	
