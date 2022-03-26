@@ -215,8 +215,9 @@ class MainWindow(QMainWindow):
         self.import_graph(g)
 
     def move(self):
-        print("Move...")
-        self.canvas.set_mode("Move")
+        if self.canvas.mode != "Calcul" :
+            print("Move...")
+            self.canvas.set_mode("Move")
 
     def stab(self):
         print("Stable...")
@@ -270,15 +271,18 @@ class MainWindow(QMainWindow):
 
 
     def draw(self):
-        print("Draw...")
-        self.canvas.set_mode("Draw")
+        if self.canvas.mode != "Calcul" :
+            print("Draw...")
+            self.canvas.set_mode("Draw")
 
     def select(self):
-        print("Select...")
-        self.canvas.set_mode("Select")
+        if self.canvas.mode != "Calcul" :
+            print("Select...")
+            self.canvas.set_mode("Select")
 
 
     def rend_stable(self):
+        self.canvas.set_mode("Calcul")
         affiche = False
         self.p = False
         self.r = False
@@ -291,7 +295,6 @@ class MainWindow(QMainWindow):
             good.setText("Ce graphe est stable")
             good.exec()
             #print("Ce graphe est stable")
-
         else :
 
             reponse = QMessageBox.question(self, "Stabilité", "Voulez-vous rendre ce graphe stable ?" )
@@ -342,6 +345,7 @@ class MainWindow(QMainWindow):
                     bad = QMessageBox()
                     bad.setText("Processus arrêté")
                     bad.exec()
+        self.canvas.set_mode("Move")
 
 
     ##############
