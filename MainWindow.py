@@ -110,7 +110,7 @@ class MainWindow(QMainWindow):
 
     ##############
     def imp(self):
-        self.p = True
+        self.s = True
         print("Import...")
         g = Graphe()
         filename = QFileDialog.getOpenFileName(self,"Open File")
@@ -205,7 +205,7 @@ class MainWindow(QMainWindow):
             
         
     def alea(self):
-        self.p = True
+        self.s = True
         g = Graphe()
         #nbsommets = random.randint(2,10)
         #arcs=random.uniform(0,0.5)
