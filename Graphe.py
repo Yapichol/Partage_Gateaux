@@ -114,12 +114,8 @@ class Graphe :
             listSuppr = []
             for i in range(len(self.arcs)) :
                 n1, n2 = self.arcs[i]
-                if (n1 == nom):
+                if (n1 == nom) or (n2 == nom):
                     listSuppr.append(i)
-                    self.modifier_gain(n2, 0)
-                elif (n2 == nom):
-                    listSuppr.append(i)
-                    self.modifier_gain(n1, 0)
             diff = 0
             for i in listSuppr :
                 self.arcs.pop(i - diff)
@@ -127,8 +123,12 @@ class Graphe :
             listSuppr = []
             for i in range(len(self.partage)) :
                 n1, n2 = self.partage[i]
-                if (n1 == nom) or (n2 == nom):
+                if (n1 == nom):
                     listSuppr.append(i)
+                    self.modifier_gain(n2, 0)
+                elif (n2 == nom):
+                    listSuppr.append(i)
+                    self.modifier_gain(n1, 0)
             diff = 0
             for i in listSuppr :
                 self.partage.pop(i - diff)
