@@ -22,6 +22,8 @@ class ArcDialog(QDialog) :
 		self.confirm.clicked.connect(self.confirmer)
 		self.annul = QPushButton("Annuler")
 		self.annul.clicked.connect(self.annuler)
+		self.suppA = QPushButton("Supprimer Arc")
+		self.suppA.clicked.connect(self.supprimerA)
 		self.supp = QPushButton("Supprimer Partage")
 		self.supp.clicked.connect(self.supprimer)
 		
@@ -38,6 +40,7 @@ class ArcDialog(QDialog) :
 		#format.addRow(self.inter)
 		forma.addRow(self.confirm)
 		forma.addRow(self.annul)
+		forma.addRow(self.suppA)
 		forma.addRow(self.supp)
 		self.resize(250, 100)
 		
@@ -115,6 +118,13 @@ class ArcDialog(QDialog) :
 		valeur = {"val1" : 0, "val2" : 0, "arc" : self.arc}
 		self.accepted.emit(valeur)
 		self.accept()
+	
+	def supprimerA(self):
+		reponse = QMessageBox.question(self, "Supprimer Arc", "Voulez-vous supprimer définitivement l'arc (" + self.arc[0] + " , " + self.arc[1] + ") ?")
+		if reponse == QMessageBox.Yes:
+			valeur = {"Supprimer" : True, "arc" : self.arc}
+			self.accepted.emit(valeur)
+			self.accept()
 	
 	def annuler(self):
 		self.accept()
