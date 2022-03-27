@@ -20,6 +20,8 @@ class NoeudDialog(QDialog) :
 		self.confirm.clicked.connect(self.confirmer)
 		self.annul = QPushButton("Annuler")
 		self.annul.clicked.connect(self.annuler)
+		self.suppN = QPushButton("Supprimer Noeud")
+		self.suppN.clicked.connect(self.supprimerN)
 		
 		forma = QFormLayout(self)
 		forma.addRow(message)
@@ -33,6 +35,7 @@ class NoeudDialog(QDialog) :
 		#format.addRow(self.inter)
 		forma.addRow(self.confirm)
 		forma.addRow(self.annul)
+		forma.addRow(self.suppN)
 		self.resize(250, 100)
 		
 	
@@ -45,7 +48,12 @@ class NoeudDialog(QDialog) :
 			self.accepted.emit(valeur)
 		self.accept()
 
-
+	def supprimerN(self):
+		reponse = QMessageBox.question(self, "Supprimer Noeud", "Voulez-vous supprimer définitivement le noeud " + self.ancNom + " ?")
+		if reponse == QMessageBox.Yes:
+			valeur = {"Supprimer" : True, "AncNom" : self.ancNom}
+			self.accepted.emit(valeur)
+			self.accept()
 	
 	def annuler(self):
 		self.accept()
