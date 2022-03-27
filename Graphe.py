@@ -66,7 +66,38 @@ class Graphe :
             self.noeuds.append((nom, 0))
         else :
             print("Le noeud ", nom, " existe deja !")
+
+	
+	
+    def changer_nom_noeud(self, nom, nouv_nom) :
+        presNouv = False
+        presAnci = False
+        for i in self.noeuds:
+            if i[0] == nouv_nom :
+                presNouv = True
+            if i[0] == nom :
+                presAnci = True
+        if (not presNouv) and (presAnci) :
+            for i in range(len(self.noeuds)) :
+                n, val =  self.noeuds[i]
+                if nom == n :
+                    self.noeuds[i] = (nouv_nom, val)
+                    break
+            for i in range(len(self.arcs)) :
+                n1, n2 = self.arcs[i]
+                if n1 == nom :
+                    self.arcs[i] = (nouv_nom, n2)
+                elif n2 == nom :
+                    self.arcs[i] = (n1, nouv_nom)
+            for i in range(len(self.partage)) :
+                n1, n2 = self.partage[i]
+                if n1 == nom :
+                    self.partage[i] = (nouv_nom, n2)
+                elif n2 == nom :
+                    self.partage[i] = (n1, nouv_nom)
     
+
+
     def ajouter_liste_noeuds(self,liste):
         """Fait appel à la fonction précédente pour ajouter tous les noeuds
         dont les noms sont présents dans liste au graphe"""
