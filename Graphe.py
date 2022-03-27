@@ -96,8 +96,46 @@ class Graphe :
                 elif n2 == nom :
                     self.partage[i] = (n1, nouv_nom)
     
-
-
+    
+    
+    def supprimer_noeud(self, nom) :
+        pres = False
+        for i in self.noeuds:
+            if i[0] == nom :
+                pres = True
+        if pres :
+            pos = -1
+            for i in range(len(self.noeuds)) :
+                n, val =  self.noeuds[i]
+                if nom == n :
+                    pos = i
+            if pos != -1 :
+                self.noeuds.pop(pos)
+            listSuppr = []
+            for i in range(len(self.arcs)) :
+                n1, n2 = self.arcs[i]
+                if (n1 == nom):
+                    listSuppr.append(i)
+                    self.modifier_gain(n2, 0)
+                elif (n2 == nom):
+                    listSuppr.append(i)
+                    self.modifier_gain(n1, 0)
+            diff = 0
+            for i in listSuppr :
+                self.arcs.pop(i - diff)
+                diff += 1
+            listSuppr = []
+            for i in range(len(self.partage)) :
+                n1, n2 = self.partage[i]
+                if (n1 == nom) or (n2 == nom):
+                    listSuppr.append(i)
+            diff = 0
+            for i in listSuppr :
+                self.partage.pop(i - diff)
+                diff += 1
+    
+    
+    
     def ajouter_liste_noeuds(self,liste):
         """Fait appel à la fonction précédente pour ajouter tous les noeuds
         dont les noms sont présents dans liste au graphe"""
@@ -127,8 +165,27 @@ class Graphe :
         for couple in liste:
             n1,n2 = couple
             self.ajouter_arc(n1,n2)
-            
-            
+    
+    
+    
+    def supprimer_arc(self, arc) :
+        pos = -1
+        for i in range(len(self.arcs)) :
+            n1, n2 = self.arcs[i]
+            if ((n1, n2) == arc) or ((n2, n1) == arc):
+                pos = i
+        if pos != -1 :
+            self.arcs.pop(pos)
+            pos = -1
+        for i in range(len(self.partage)) :
+            n1, n2 = self.partage[i]
+            if ((n1, n2) == arc) or ((n2, n1) == arc):
+                pos = i
+        if pos != -1 :
+            self.partage.pop(pos)
+    
+    
+    
     def generer_graphe(self, nb_noeuds, p):
         """Génère un graphe de nb_noeuds sommets et où l'arc entre deux sommets
         a une probabilité p d'exister"""
