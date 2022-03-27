@@ -112,24 +112,44 @@ class Canvas(QWidget):
 		self.update()
 	
 	
+
+	def supprimer_arc(self, arc) :
+		n1, n2 = arc
+		suppr = False
+		if (n1, n2) in self.dicLigne :
+			self.dicLigne.pop((n1, n2))
+			suppr = True
+		if (n2, n1) in self.dicLigne :
+			self.dicLigne.pop((n2, n1))
+			suppr = True
+		if suppr :
+			self.graphe.supprimer_arc(arc)
+			self.maj_graph(self.graphe)
 	
-	def modif_partage(self, arc) :
+	
+	
+	def select_arc(self, arc) :
 		val_noeud1 = self.graphe.get_valeur(arc[0])
 		val_noeud2 = self.graphe.get_valeur(arc[1])
 		dialo = ArcDialog(arc, val_noeud1, val_noeud2, parent = self)
-		dialo.accepted.connect(self.arcDialoAccepted)
+		dialo.accepted.connect(self.arcDialogAccepted)
 		dialo.exec_()
-		self.maj_graph(self.graphe)
-		
-		
-	def arcDialoAccepted(self, valeur) :
+	
+	
+	
+	def arcDialogAccepted(self, valeur) :
 		#print("pouaf")
 		#print(int(valeur["val1"]) + int(valeur["val2"]))
 		#print(valeur["arc"])
-		if (((valeur["val1"]) + (valeur["val2"])) > 0) :
-			self.graphe.modifier_partage(valeur["arc"], (valeur["val1"]), (valeur["val2"]))
+		if "Supprimer" in valeur :
+			if valeur["Supprimer"] :
+				self.supprimer_arc(valeur["arc"])
 		else :
-			self.graphe.supprimer_partage(valeur["arc"])
+			if (((valeur["val1"]) + (valeur["val2"])) > 0) :
+				self.graphe.modifier_partage(valeur["arc"], (valeur["val1"]), (valeur["val2"]))
+			else :
+				self.graphe.supprimer_partage(valeur["arc"])
+			self.maj_graph(self.graphe)
 	
 	
 	
@@ -156,40 +176,62 @@ class Canvas(QWidget):
 	
 	
 	
-	def changer_noeud_nom(self, nom) :
+	def changer_noeud_nom(self, nom, nouv_nom) :
+		if (nom != nouv_nom) and (nouv_nom != ""):
+			if (nom in self.dicNoeuds) and (nouv_nom not in self.dicNoeuds) :
+					pos = self.dicNoeuds[nom]
+					self.dicNoeuds[nouv_nom] = pos
+					self.dicNoeuds.pop(nom)
+					listSuppr = []
+					for cle, val in self.dicLigne.items() :
+						n1, n2 = cle
+						if n1 == nom :
+							listSuppr.append(cle)
+						elif n2 == nom :
+							listSuppr.append(cle)
+					for i in listSuppr :
+						val = self.dicLigne[i]
+						n1, n2 = i
+						if n1 == nom :
+							self.dicLigne[(nouv_nom, n2)] = val
+						else :
+							self.dicLigne[(n1, nouv_nom)] = val
+						self.dicLigne.pop(i)
+					self.graphe.changer_nom_noeud(nom, nouv_nom)
+					self.maj_graph(self.graphe)
+	
+	
+	
+	def supprimer_noeud(self, nom) :
+		if nom in self.dicNoeuds :
+			self.dicNoeuds.pop(nom)
+			listSuppr = []
+			for cle, val in self.dicLigne.items() :
+				n1, n2 = cle
+				if n1 == nom :
+					listSuppr.append(cle)
+				elif n2 == nom :
+					listSuppr.append(cle)
+			for i in listSuppr :
+				self.dicLigne.pop(i)
+			self.graphe.supprimer_noeud(nom)
+			self.maj_graph(self.graphe)
+	
+	
+	
+	def select_noeud(self, nom) :
 		dialo = NoeudDialog(nom, parent = self)
 		dialo.accepted.connect(self.noeudDialogAccepted)
 		dialo.exec_()
-
-
+	
+	
+	
 	def noeudDialogAccepted(self, valeur) :
-		print(valeur)
-		if (valeur != None) and (valeur["NouvNom"] != valeur["AncNom"]) and (valeur["NouvNom"] != "") :
-			nom = valeur["AncNom"]
-			nouv_nom = valeur["NouvNom"]
-			if (nom in self.dicNoeuds) and (nouv_nom not in self.dicNoeuds) :
-				pos = self.dicNoeuds[nom]
-				self.dicNoeuds[nouv_nom] = pos
-				self.dicNoeuds.pop(nom)
-				listSuppr = []
-				for cle, val in self.dicLigne.items() :
-					n1, n2 = cle
-					if n1 == nom :
-						listSuppr.append(cle)
-					elif n2 == nom :
-						listSuppr.append(cle)
-				for i in listSuppr :
-					val = self.dicLigne[i]
-					n1, n2 = i
-					if n1 == nom :
-						self.dicLigne[(nouv_nom, n2)] = val
-					else :
-						self.dicLigne[(n1, nouv_nom)] = val
-					self.dicLigne.pop(i)
-				
-				self.graphe.changer_nom_noeud(nom, nouv_nom)
-				print(nouv_nom)
-				self.maj_graph(self.graphe)
+		if ("NouvNom" in valeur) and ("AncNom" in valeur) :
+			self.changer_noeud_nom(valeur["AncNom"], valeur["NouvNom"])
+		elif "Supprimer" in valeur :
+			self.supprimer_noeud(valeur["AncNom"])
+			
 	
 	
 	
@@ -244,7 +286,7 @@ class Canvas(QWidget):
 							break
 					if noeud != "." :
 						#print(noeud)
-						self.changer_noeud_nom(noeud)
+						self.select_noeud(noeud)
 						change = True
 			if not change :
 				self.pointer = (QLineF(self.cursorPosRelease.x() - self.taillePointeur, self.cursorPosRelease.y(), self.cursorPosRelease.x() + self.taillePointeur, self.cursorPosRelease.y()), QLineF(self.cursorPosRelease.x(), self.cursorPosRelease.y() - self.taillePointeur, self.cursorPosRelease.x(), self.cursorPosRelease.y() + self.taillePointeur))
@@ -260,7 +302,7 @@ class Canvas(QWidget):
 						#print("INTERSECTION :(", intersection.x()," , ", intersection.y(), ")")
 						#print("POINTEUR :(", self.cursorPosRelease.x()," , ", self.cursorPosRelease.y(), ")")
 				if arc != (".", ".") :
-					self.modif_partage(arc)
+					self.select_arc(arc)
 				
 				#print("Fin 2")
 			#self.pointer = None
