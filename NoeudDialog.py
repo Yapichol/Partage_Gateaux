@@ -40,7 +40,7 @@ class NoeudDialog(QDialog) :
 	def confirmer(self):
 		nouv = self.nouvNom.text()
 		#annulation = False :
-		if (';' not in nouv) and (' ' not in nouv) :
+		if (',' not in nouv) and (' ' not in nouv) :
 			valeur = {"NouvNom" : nouv, "AncNom" : self.ancNom}
 			self.accepted.emit(valeur)
 		self.accept()
