@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from Graphe import *
 from ArcDialog import *
+from NoeudDialog import *
 import math
 
 
@@ -132,6 +133,12 @@ class Canvas(QWidget):
 	
 	
 	
+	def ajouterArc(self, arc) :
+		self.graphe.ajouter_arc(arc[0], arc[1])
+		self.maj_graph(self.graphe)
+	
+	
+	
 	def nouv_noeud(self, position) :
 		nom = ""
 		alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
@@ -149,9 +156,40 @@ class Canvas(QWidget):
 	
 	
 	
-	def ajouterArc(self, arc) :
-		self.graphe.ajouter_arc(arc[0], arc[1])
-		self.maj_graph(self.graphe)
+	def changer_noeud_nom(self, nom) :
+		dialo = NoeudDialog(nom, parent = self)
+		dialo.accepted.connect(self.noeudDialogAccepted)
+		dialo.exec_()
+
+
+	def noeudDialogAccepted(self, valeur) :
+		print(valeur)
+		if (valeur != None) and (valeur["NouvNom"] != valeur["AncNom"]) and (valeur["NouvNom"] != "") :
+			nom = valeur["AncNom"]
+			nouv_nom = valeur["NouvNom"]
+			if (nom in self.dicNoeuds) and (nouv_nom not in self.dicNoeuds) :
+				pos = self.dicNoeuds[nom]
+				self.dicNoeuds[nouv_nom] = pos
+				self.dicNoeuds.pop(nom)
+				listSuppr = []
+				for cle, val in self.dicLigne.items() :
+					n1, n2 = cle
+					if n1 == nom :
+						listSuppr.append(cle)
+					elif n2 == nom :
+						listSuppr.append(cle)
+				for i in listSuppr :
+					val = self.dicLigne[i]
+					n1, n2 = i
+					if n1 == nom :
+						self.dicLigne[(nouv_nom, n2)] = val
+					else :
+						self.dicLigne[(n1, nouv_nom)] = val
+					self.dicLigne.pop(i)
+				
+				self.graphe.changer_nom_noeud(nom, nouv_nom)
+				print(nouv_nom)
+				self.maj_graph(self.graphe)
 	
 	
 	
@@ -196,20 +234,34 @@ class Canvas(QWidget):
 		pointrelease = event.pos()
 		if self.mode == "Select" :
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
-			self.pointer = (QLineF(self.cursorPosRelease.x() - self.taillePointeur, self.cursorPosRelease.y(), self.cursorPosRelease.x() + self.taillePointeur, self.cursorPosRelease.y()), QLineF(self.cursorPosRelease.x(), self.cursorPosRelease.y() - self.taillePointeur, self.cursorPosRelease.x(), self.cursorPosRelease.y() + self.taillePointeur))
-			intersection = QPointF(0, 0)
-			arc = (".", ".")
-			for cle, valeur in self.dicLigne.items():
-				n1, n2 = cle
-				ligne = QLineF(QPoint(self.dicNoeuds[n1].x() + int(self.tailleNoeud / 2), self.dicNoeuds[n1].y() + int(self.tailleNoeud / 2)), QPoint(self.dicNoeuds[n2].x() + int(self.tailleNoeud / 2), self.dicNoeuds[n2].y() + int(self.tailleNoeud / 2)))
-				if (ligne.intersect(self.pointer[0], intersection) == 1) or (ligne.intersect(self.pointer[1], intersection) == 1) :
-					#print(cle)
-					arc = cle
-					break
-					#print("INTERSECTION :(", intersection.x()," , ", intersection.y(), ")")
-					#print("POINTEUR :(", self.cursorPosRelease.x()," , ", self.cursorPosRelease.y(), ")")
-			if arc != (".", ".") :
-				self.modif_partage(arc)
+			change = False
+			if self.dicNoeuds != {} :
+					noeud = "."
+					for cle, valeur in self.dicNoeuds.items():
+						rec = QRect(valeur.x(), valeur.y(), self.tailleNoeud, self.tailleNoeud)
+						if rec.contains(self.cursorPosRelease.x(), self.cursorPosRelease.y()) :
+							noeud = cle
+							break
+					if noeud != "." :
+						#print(noeud)
+						self.changer_noeud_nom(noeud)
+						change = True
+			if not change :
+				self.pointer = (QLineF(self.cursorPosRelease.x() - self.taillePointeur, self.cursorPosRelease.y(), self.cursorPosRelease.x() + self.taillePointeur, self.cursorPosRelease.y()), QLineF(self.cursorPosRelease.x(), self.cursorPosRelease.y() - self.taillePointeur, self.cursorPosRelease.x(), self.cursorPosRelease.y() + self.taillePointeur))
+				intersection = QPointF(0, 0)
+				arc = (".", ".")
+				for cle, valeur in self.dicLigne.items():
+					n1, n2 = cle
+					ligne = QLineF(QPoint(self.dicNoeuds[n1].x() + int(self.tailleNoeud / 2), self.dicNoeuds[n1].y() + int(self.tailleNoeud / 2)), QPoint(self.dicNoeuds[n2].x() + int(self.tailleNoeud / 2), self.dicNoeuds[n2].y() + int(self.tailleNoeud / 2)))
+					if (ligne.intersect(self.pointer[0], intersection) == 1) or (ligne.intersect(self.pointer[1], intersection) == 1) :
+						#print(cle)
+						arc = cle
+						break
+						#print("INTERSECTION :(", intersection.x()," , ", intersection.y(), ")")
+						#print("POINTEUR :(", self.cursorPosRelease.x()," , ", self.cursorPosRelease.y(), ")")
+				if arc != (".", ".") :
+					self.modif_partage(arc)
+				
 				#print("Fin 2")
 			#self.pointer = None
 		#elif self.mode == "Move" :
