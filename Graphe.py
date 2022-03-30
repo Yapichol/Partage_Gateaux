@@ -319,6 +319,7 @@ class Graphe :
         
         stable = True
         pas_stable = []
+        paires = []
         #pour tout arc (n1,n2) qui n'est pas dans le partage, on verifie qu'un
         #partage entre n1 et n2 n'augmenterait pas la valeur des deux noeuds
         #si ce n'est pas le cas, partage n'est pas stable
@@ -334,18 +335,29 @@ class Graphe :
                     stable = False
                     pas_stable.append(n1)
                     pas_stable.append(n2)
-        return stable, list(set(pas_stable))
+                    paires.append((n1,n2))
+        return stable, list(set(pas_stable)),paires
     
-    def devenir_stable(self,pas_stable):
+    def devenir_stable(self,pas_stable,paires):
         
         while pas_stable:
             n1 = pas_stable.pop(0)
-            n2,offre = self.offre_ext(n1,pas_stable)
+            n2 = None
+            options = []
+            for o in paires:
+                x1,x2 = o
+                if x1==n1 and (x2 in pas_stable):
+                    options.append(x2)
+                    paires.remove(o)
+                if x2==n1 and (x1 in pas_stable):
+                    options.append(x1)
+                    paires.remove(o)
+            n2,offre = self.offre_ext(n1,options)
             v1 = self.get_valeur(n1)
-            v2 = self.get_valeur(n2)
+            
             
             if n2!=None and ((n1,n2) not in self.partage) and ((n2,n1) not in self.partage):
-             
+                v2 = self.get_valeur(n2)
                 pas_stable.remove(n2)
                 #on supprime les partages qui existaient entre n1 et 
                 #les autres noeuds du graphe
@@ -386,7 +398,6 @@ class Graphe :
                     self.modifier_gain(n1,v1)
                     self.modifier_gain(n2,v2)
                 self.partage.append((n1,n2))
-    
                        
     def affiche(self):
         """Dessine le graphe"""

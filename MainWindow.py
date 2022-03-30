@@ -221,7 +221,7 @@ class MainWindow(QMainWindow):
 
     def stab(self):
         print("Stable...")
-        boole,liste = self.canvas.graphe.est_stable()
+        boole,liste,paires = self.canvas.graphe.est_stable()
         if boole :
             good = QMessageBox()
             good.setText("Ce graphe est stable")
@@ -287,7 +287,7 @@ class MainWindow(QMainWindow):
         self.p = False
         self.r = False
         self.s = False
-        boole, liste = self.canvas.graphe.est_stable()
+        boole, liste, paires = self.canvas.graphe.est_stable()
         iter_max = 100
         n = 0
         if boole :
@@ -307,7 +307,7 @@ class MainWindow(QMainWindow):
                     n+=1
                     g=self.canvas.graphe
                     #print("partage: ",g.partage)
-                    g.devenir_stable(liste)
+                    g.devenir_stable(liste,paires)
                     #self.import_graph(g)
                     self.canvas.maj_graph(g)
                     if affiche:
@@ -315,7 +315,7 @@ class MainWindow(QMainWindow):
                         loop = QEventLoop()
                         QTimer.singleShot(2000, loop.quit)
                         loop.exec_()
-                    boole, liste = g.est_stable()
+                    boole, liste, paires = g.est_stable()
 
                     while self.p and not self.s:
                         loop = QEventLoop()
