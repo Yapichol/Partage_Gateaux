@@ -74,12 +74,6 @@ class MainWindow(QMainWindow):
         toolsMenu.addAction(balanced)
         balanced.triggered.connect(self.bal)
 
-        rend_stable = QAction(QIcon(),"Rend stable...",self)
-        rend_stable.setShortcut(QKeySequence("Ctrl+R"))
-        rend_stable.setToolTip("Rend Stable")
-        rend_stable.setStatusTip("Rend stable")
-        toolsMenu.addAction(rend_stable)
-        rend_stable.triggered.connect(self.rend_stable)
 
         close = fileMenu.addAction(QIcon(":/icons/quit.png"), "&Quit", self.quit, QKeySequence("Ctrl+Q"))
         fileBar.addAction(close)
@@ -239,7 +233,8 @@ class MainWindow(QMainWindow):
 
     def create(self):
         print("Create...")
-        pass
+        g = Graphe()
+	self.canvas.imp_g(g)
 
     def zoomin(self):
         print("Zoom in...")
