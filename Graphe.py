@@ -181,6 +181,8 @@ class Graphe :
             n1, n2 = self.partage[i]
             if ((n1, n2) == arc) or ((n2, n1) == arc):
                 pos = i
+                self.modifier_gain(n1, 0)
+                self.modifier_gain(n2, 0)
         if pos != -1 :
             self.partage.pop(pos)
     
