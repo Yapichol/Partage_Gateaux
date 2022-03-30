@@ -248,7 +248,7 @@ class Canvas(QWidget):
 		#elif self.mode == "Move" :
 		#	self.cursorPosPress = QPoint(pointpress.x() - self.posCanvas[0], pointpress.y() - self.posCanvas[1])
 		#	self.cursorPosRelease = self.cursorPosPress
-		elif self.mode == "Move" :
+		elif (self.mode == "Move") or (self.mode == "Calcul") :
 			self.listSelected = []
 			self.cursorPosPress = QPoint(pointpress.x() - self.posCanvas[0], pointpress.y() - self.posCanvas[1])
 			self.cursorPosRelease = self.cursorPosPress
@@ -309,7 +309,7 @@ class Canvas(QWidget):
 		#elif self.mode == "Move" :
 		#	self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
 		#	self.posCanvas = (self.posCanvas[0] + self.cursorPosRelease.x() - self.cursorPosPress.x(), self.posCanvas[1] + self.cursorPosRelease.y() - self.cursorPosPress.y())
-		elif self.mode == "Move" :
+		elif (self.mode == "Move") or (self.mode == "Calcul") :
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
 			self.listSelected = []
 		elif self.mode == "Draw" :
@@ -339,7 +339,7 @@ class Canvas(QWidget):
 		#elif self.mode == "Move" :
 		#	self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
 		#	self.posCanvas = (self.posCanvas[0] + self.cursorPosRelease.x() - self.cursorPosPress.x(), self.posCanvas[1] + self.cursorPosRelease.y() - self.cursorPosPress.y())
-		elif self.mode == "Move" :
+		elif (self.mode == "Move") or (self.mode == "Calcul") :
 			ancienPos = self.cursorPosRelease
 			self.cursorPosRelease = QPoint(pointrelease.x() - self.posCanvas[0], pointrelease.y() - self.posCanvas[1])
 			if self.listSelected != []:
