@@ -175,7 +175,8 @@ class MainWindow(QMainWindow):
         self.import_graph(g)
 
     def import_graph(self, graphe):
-        
+        self.canvas.unstable=[]
+        self.s = True
         self.canvas.imp_g(graphe)
         
     def exp(self):
