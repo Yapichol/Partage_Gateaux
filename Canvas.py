@@ -30,6 +30,7 @@ class Canvas(QWidget):
 		self.taillePointeur = 5
 		self.constructArc = None
 	
+		self.unstable =[]
 	
 	
 	def get_listElem(self):
@@ -387,6 +388,9 @@ class Canvas(QWidget):
 		for cle, valeur in self.dicNoeuds.items() :
 			painter.setBrush(Qt.white)
 			if cle != None or valeur != None :
+				if cle in self.unstable:
+					painter.setBrush(Qt.gray)
+				
 				painter.drawEllipse(valeur.x(), valeur.y(), self.tailleNoeud, self.tailleNoeud)
 				painter.drawText(valeur.x(), valeur.y(), self.tailleNoeud, self.tailleNoeud, Qt.AlignCenter, cle)
 				val = self.graphe.get_val_noeud(cle)

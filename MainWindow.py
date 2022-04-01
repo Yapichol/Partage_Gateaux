@@ -120,25 +120,57 @@ class MainWindow(QMainWindow):
 
         for i in range(0,nbsommets):
             tmp = doc[i]
-            tmp = tmp.replace(',','')
-            tmp = tmp.replace(' ','')
-            tmp = tmp.replace('\n','')
-            lettre = tmp[0]
-            valeur = float(tmp[1:])
+            lettre =""
+            j = 0
+            while tmp[j]!=',':
+                lettre+=tmp[j]
+                j+=1
+            j+=1
+            valeur = ""
+            while tmp[j]!='\n':
+                valeur+=tmp[j]
+                j+=1
+            
+            lettre = lettre.replace(' ','')
+            valeur = valeur.replace(' ','')
+            
+            valeur = float(valeur)
             g.ajouter_noeud(lettre)
             g.modifier_gain(lettre,valeur)
 
         for i in range(nbsommets,nbsommets+nbarcs):
             arc = str(doc[i])
-            arc=arc.replace(' ','')
-            arc=arc.replace(',','')
-            g.ajouter_arc(arc[0],arc[1])
+            lettre1 = ""
+            lettre2 = ""
+            j = 0
+            while arc[j]!=',':
+                lettre1+=arc[j]
+                j+=1
+            
+            j+=1
+            while arc[j]!='\n':
+                lettre2+=arc[j]
+                j+=1
+            lettre1=lettre1.replace(' ','')
+            lettre2=lettre2.replace(' ','')
+            g.ajouter_arc(lettre1,lettre2)
         
         for i in range(nbsommets+nbarcs,len(doc)):
             partage = str(doc[i])
-            partage=partage.replace(' ','')
-            partage=partage.replace(',','')
-            g.partage.append((partage[0],partage[1]))
+            lettre1 = ""
+            lettre2 = ""
+            j = 0
+            while partage[j]!=',':
+                lettre1+=partage[j]
+                j+=1
+            j+=1
+            while partage[j]!='\n':
+                lettre2+=partage[j]
+                j+=1
+            lettre1=lettre1.replace(' ','')
+            lettre2=lettre2.replace(' ','')
+
+            g.partage.append((lettre1,lettre2))
 		
         self.import_graph(g)
 
@@ -216,6 +248,7 @@ class MainWindow(QMainWindow):
     def stab(self):
         print("Stable...")
         boole,liste,paires = self.canvas.graphe.est_stable()
+        
         if boole :
             good = QMessageBox()
             good.setText("Ce graphe est stable")
@@ -233,8 +266,8 @@ class MainWindow(QMainWindow):
 
     def create(self):
         print("Create...")
-        g = Graphe()
-	self.canvas.imp_g(g)
+        g = Graphe()        
+        self.canvas.imp_g(g)
 
     def zoomin(self):
         print("Zoom in...")
@@ -324,7 +357,14 @@ class MainWindow(QMainWindow):
                     if n>iter_max or self.s:
                         
                         break
-                        
+                
+
+                nstable = ""
+                for i in liste:
+                    nstable+=i+", "
+                if len(nstable)>2:
+                    nstable= nstable[:-2]
+
                 if boole :
                     good = QMessageBox()
                     good.setText("Ce graphe est stable en "+str(n)+" itérations.")
@@ -332,14 +372,15 @@ class MainWindow(QMainWindow):
                     #print("Ce graphe est stable")
                 elif not self.s:
                     bad = QMessageBox()
-                    bad.setText("Impossible de rendre ce graphe stable")
+                    bad.setText("Impossible de rendre ce graphe stable\nNoeuds non stables : "+nstable)
                     bad.exec()
                     #print("Impossible de rendre ce graphe stable")
                 else:
                     self.s = False
                     bad = QMessageBox()
-                    bad.setText("Processus arrêté")
+                    bad.setText("Processus arrêté\nNoeuds non stables : "+nstable)
                     bad.exec()
+                self.canvas.unstable = liste
         self.canvas.set_mode("Move")
 
 
