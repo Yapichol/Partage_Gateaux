@@ -17,6 +17,7 @@ class Canvas(QWidget):
 		
 		self.dicNoeuds = {}
 		self.dicLigne = {}
+		self.arCurseur = {}
 		self.graphe = None
 		self.pointer = None
         
@@ -52,6 +53,7 @@ class Canvas(QWidget):
 		for n1,n2 in self.graphe.arcs :
 			if ((n1,n2) in self.graphe.partage) or ((n2,n1) in self.graphe.partage):
 				self.dicLigne[(n1,n2)] = 1
+				self.arCurseur[(n1,n2)] = QPoint(0, 0)
 			else :
 				self.dicLigne[(n1,n2)] = 0
 		repartieAuto = True
@@ -93,6 +95,7 @@ class Canvas(QWidget):
 							pos = self.dicNoeuds[cle]
 							self.dicNoeuds[cle] = QPoint(pos.x() + 10, pos.y() - 10)
 				roue += 1
+			self.maj_arcurseur()
 		self.update()
 	
 	
@@ -109,8 +112,50 @@ class Canvas(QWidget):
 				self.dicLigne[i] = 1
 			else :
 				self.dicLigne[i] = 0
+		self.maj_arcurseur()
 				
 		self.update()
+	
+	
+	
+	def maj_arcurseur(self, cur = None) :
+		if cur == None :
+			self.arCurseur = {}
+			for cle, val in self.dicLigne.items() :
+				if val == 1:
+					n1, n2 = cle
+					posN1 = (self.dicNoeuds[n1].x() + int(self.tailleNoeud / 2), self.dicNoeuds[n1].y() + int(self.tailleNoeud / 2))
+					posN2 = (self.dicNoeuds[n2].x() + int(self.tailleNoeud / 2), self.dicNoeuds[n2].y() + int(self.tailleNoeud / 2))
+					valN1 = self.graphe.get_val_noeud(n1)
+					vecN1N2 = (posN2[0] - posN1[0], posN2[1] - posN1[1])
+					
+					if abs(vecN1N2[0]) + abs(vecN1N2[1]) != 0 :
+						maxi = max(abs(vecN1N2[0]), abs(vecN1N2[1]))
+						vecNorm = (vecN1N2[0] / (maxi), vecN1N2[1] / (maxi))
+						posN1 = (posN1[0] + int((self.tailleNoeud / 2) * vecNorm[0]), posN1[1] + int((self.tailleNoeud / 2) * vecNorm[1]))
+						posN2 = (posN2[0] - int((self.tailleNoeud / 2) * vecNorm[0]), posN2[1] - int((self.tailleNoeud / 2) * vecNorm[1]))
+						vecN1N2 =(posN2[0] - posN1[0], posN2[1] - posN1[1])
+					vecAdap = (vecN1N2[0] * valN1, vecN1N2[1] * valN1)
+					self.arCurseur[cle] = QPoint(posN1[0] + vecAdap[0], posN1[1] + vecAdap[1])
+		else :
+			for i in cur :
+				n1, n2 = i
+				posN1 = (self.dicNoeuds[n1].x() + int(self.tailleNoeud / 2), self.dicNoeuds[n1].y() + int(self.tailleNoeud / 2))
+				posN2 = (self.dicNoeuds[n2].x() + int(self.tailleNoeud / 2), self.dicNoeuds[n2].y() + int(self.tailleNoeud / 2))
+				valN1 = self.graphe.get_val_noeud(n1)
+				vecN1N2 = (posN2[0] - posN1[0], posN2[1] - posN1[1])
+				
+				if abs(vecN1N2[0]) + abs(vecN1N2[1]) != 0 :
+					maxi = max(abs(vecN1N2[0]), abs(vecN1N2[1]))
+					vecNorm = (vecN1N2[0] / (maxi), vecN1N2[1] / (maxi))
+					posN1 = (posN1[0] + int((self.tailleNoeud / 2) * vecNorm[0]), posN1[1] + int((self.tailleNoeud / 2) * vecNorm[1]))
+					posN2 = (posN2[0] - int((self.tailleNoeud / 2) * vecNorm[0]), posN2[1] - int((self.tailleNoeud / 2) * vecNorm[1]))
+					vecN1N2 = vecN1N2 = (posN2[0] - posN1[0], posN2[1] - posN1[1])
+				vecAdap = (vecN1N2[0] * valN1, vecN1N2[1] * valN1)
+				if i in self.arCurseur :
+					self.arCurseur[i] = QPoint(posN1[0] + vecAdap[0], posN1[1] + vecAdap[1])
+				else :
+					self.arCurseur[(n2, n1)] = QPoint(posN1[0] + vecAdap[0], posN1[1] + vecAdap[1])
 	
 	
 
@@ -347,6 +392,12 @@ class Canvas(QWidget):
 				for i in self.listSelected :
 					pos = self.dicNoeuds[i]
 					self.dicNoeuds[i] = QPoint(pos.x() + self.cursorPosRelease.x() - ancienPos.x(), pos.y() + self.cursorPosRelease.y() - ancienPos.y())
+					listCurs = []
+					for y, z in self.dicLigne.items() :
+						n1, n2 = y
+						if ((y[0] == i) or (y[1] == i)) and (z == 1) :
+							listCurs.append(y)
+					self.maj_arcurseur(listCurs)
 			else :
 				self.posCanvas = (self.posCanvas[0] + self.cursorPosRelease.x() - self.cursorPosPress.x(), self.posCanvas[1] + self.cursorPosRelease.y() - self.cursorPosPress.y())
 		elif self.mode == "Draw" :
@@ -382,15 +433,23 @@ class Canvas(QWidget):
 				pen.setWidth(3)
 				painter.setPen(pen)
 				painter.drawLine(QPoint(self.dicNoeuds[self.constructArc[0]].x() + int(self.tailleNoeud / 2), self.dicNoeuds[self.constructArc[0]].y() + int(self.tailleNoeud / 2)), self.constructArc[1])
-				pen = QPen(Qt.black)
-				pen.setWidth(3)
-				painter.setPen(pen)
+				#pen = QPen(Qt.black)
+				#pen.setWidth(3)
+				#painter.setPen(pen)
+		for cle, val in self.arCurseur.items() :
+			pen = QPen(Qt.red)
+			pen.setWidth(3)
+			painter.setPen(pen)
+			painter.setBrush(Qt.black)
+			painter.drawEllipse(val.x() - 3, val.y() - 3, 9, 9)
+		pen = QPen(Qt.black)
+		pen.setWidth(3)
+		painter.setPen(pen)
 		for cle, valeur in self.dicNoeuds.items() :
 			painter.setBrush(Qt.white)
 			if cle != None or valeur != None :
 				if cle in self.unstable:
 					painter.setBrush(Qt.gray)
-				
 				painter.drawEllipse(valeur.x(), valeur.y(), self.tailleNoeud, self.tailleNoeud)
 				painter.drawText(valeur.x(), valeur.y(), self.tailleNoeud, self.tailleNoeud, Qt.AlignCenter, cle)
 				val = self.graphe.get_val_noeud(cle)
