@@ -57,61 +57,62 @@ class ArcDialog(QDialog) :
 		flotant = ""
 		list_int = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 		annuler = False
-		for i in text1 :
-			if i in list_int :
-				if ent :
-					entier += i
+		if (text1 != "") and (text2 != "") :
+			for i in text1 :
+				if i in list_int :
+					if ent :
+						entier += i
+					else :
+						flotant += i
+				elif ent and (i == ',' or i == '.') :
+					ent = False
+				elif ent and (i == '/') :
+					div = True
+					ent = False
 				else :
-					flotant += i
-			elif ent and (i == ',' or i == '.') :
-				ent = False
-			elif ent and (i == '/') :
-				div = True
-				ent = False
-			else :
-				annuler = True
-				break
-		if div :
-			if flotant != "":
-				valn1 = int(entier) / int(flotant)
-			else :
-				annuler = True
-		else :
-			if flotant != "":
-				valn1 = int(entier) + (int(flotant) / (10 ** len(flotant)))
-			else :
-				valn1 = int(entier)
-		ent = True
-		div = False
-		entier = ""
-		flotant = ""
-		for i in text2 :
-			if i in list_int :
-				if ent :
-					entier += i
+					annuler = True
+					break
+			if div :
+				if flotant != "":
+					valn1 = int(entier) / int(flotant)
 				else :
-					flotant += i
-			elif ent and (i == ',' or i == '.') :
-				ent = False
-			elif ent and (i == '/') :
-				div = True
-				ent = False
+					annuler = True
 			else :
-				annuler = True
-				break
-		if div :
-			if flotant != "":
-				valn2 = int(entier) / int(flotant)
+				if flotant != "":
+					valn1 = int(entier) + (int(flotant) / (10 ** len(flotant)))
+				else :
+					valn1 = int(entier)
+			ent = True
+			div = False
+			entier = ""
+			flotant = ""
+			for i in text2 :
+				if i in list_int :
+					if ent :
+						entier += i
+					else :
+						flotant += i
+				elif ent and (i == ',' or i == '.') :
+					ent = False
+				elif ent and (i == '/') :
+					div = True
+					ent = False
+				else :
+					annuler = True
+					break
+			if div :
+				if flotant != "":
+					valn2 = int(entier) / int(flotant)
+				else :
+					annuler = True
 			else :
-				annuler = True
-		else :
-			if flotant != "":
-				valn2 = int(entier) + (int(flotant) / (10 ** len(flotant)))
-			else :
-				valn2 = int(entier)
-		if not annuler :
-			valeur = {"val1" : valn1, "val2" : valn2, "arc" : self.arc}
-			self.accepted.emit(valeur)
+				if flotant != "":
+					valn2 = int(entier) + (int(flotant) / (10 ** len(flotant)))
+				else :
+					valn2 = int(entier)
+			if not annuler :
+				valeur = {"val1" : valn1, "val2" : valn2, "arc" : self.arc}
+				self.accepted.emit(valeur)
 		self.accept()
 	
 	def supprimer(self):
