@@ -254,6 +254,7 @@ class MainWindow(QMainWindow):
             good = QMessageBox()
             good.setText("Ce graphe est stable")
             good.exec()
+            self.canvas.unstable = []
         else :
             bad = QMessageBox()
             bad.setText("Ce graphe n'est pas stable")
