@@ -337,7 +337,7 @@ class MainWindow(QMainWindow):
                     n+=1
                     g=self.canvas.graphe
                     #print("partage: ",g.partage)
-                    g.devenir_stable(liste,paires)
+                    g.devenir_stable2(liste,paires)
                     #self.import_graph(g)
                     self.canvas.maj_graph(g)
                     if affiche:
