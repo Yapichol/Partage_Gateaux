@@ -36,11 +36,12 @@ class Graphe :
         noeud ainsi que la valeur de l'offre"""
         n2 = None
         offre = 0
+        poids = 1
         
         voisins = self.get_voisin(n1)
         for n in liste_noeuds:
             if n in voisins:
-                valeur = 1-self.get_valeur(n)
+                valeur = poids-self.get_valeur(n)
                 if valeur>offre:
                     offre = valeur
                     n2 = n
@@ -503,7 +504,60 @@ class Graphe :
                 return True
         return False
     
+    def edge_balancing(self,to_balance):
+        
+        u,v = random.choice(to_balance)
+        voisins_u = self.get_voisin(u)
+        voisins_v = self.get_voisin(v)
+        voisins_u.remove(v)
+        voisins_v.remove(u)
+        print("voisinsu",voisins_u)
+        print("voisinsv",voisins_v)
+        
+        if voisins_u==[]:
+            alpha_u = 0
+        else:
+            _,alpha_u = self.offre_ext(u,voisins_u)
+        if voisins_v==[]:
+            alpha_v = 0
+        else:
+            _,alpha_v = self.offre_ext(v,voisins_v)
+        
+        
+        poids = 1
+        suv = poids - alpha_u - alpha_v
+        
+        xuprime = alpha_u + suv*0.5
+        xvprime = alpha_v + suv*0.5
+        
+        if xuprime<0:
+            self.modifier_gain(u,0)
+            self.modifier_gain(v,poids)
+        elif xvprime<0:
+            self.modifier_gain(u,poids)            
+            self.modifier_gain(v,0)
+        else:
+            self.modifier_gain(u,xuprime)
+            self.modifier_gain(v,xvprime)
+        
+        to_balance.remove((u,v))
+            
+        
     
+    def devenir_balanced(self,partage):
+        to_balance = []
+        for arc in partage:
+            if ((not self.partage_sature(arc)) and (not self.quasi_balanced(arc))):
+                to_balance.append(arc)
+        i = 0
+        while to_balance and i<30:
+            self.edge_balancing(to_balance)
+            i += 1
+            self.affiche()
+            
+        print("Nombre d'itérations: ",i)
+        
+        
     def affiche(self):
         """Dessine le graphe"""
         G = nx.Graph()

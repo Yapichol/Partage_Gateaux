@@ -264,7 +264,47 @@ class MainWindow(QMainWindow):
 
     def bal(self):
         print("Balanced...")
-        pass
+        g = self.canvas.graphe
+        affiche = False
+        to_balance = []
+        for arc in g.partage:
+            if ((not g.partage_sature(arc)) and (not g.quasi_balanced(arc))):
+                to_balance.append(arc)
+        if to_balance!=[]:
+            reponse = QMessageBox.question(self, "Balanced", "Voulez-vous rendre les arcs balanced ?" )
+            if reponse == QMessageBox.Yes:
+                affichage = QMessageBox.question(self, "Balanced", "Voulez-vous afficher chaque itération?" )
+                if affichage == QMessageBox.Yes:
+                    affiche = True
+        else:
+            good = QMessageBox()
+            good.setText("Les arcs sont balanced")
+            good.exec()
+            
+        i = 0
+        while to_balance and i<30:
+            g.edge_balancing(to_balance)
+            self.canvas.maj_graph(g)
+            self.canvas.repaint()
+            loop = QEventLoop()
+            QTimer.singleShot(2000, loop.quit)
+            loop.exec_()
+            i += 1
+        
+        if i<30:
+            good = QMessageBox()
+            good.setText("Les arcs sont balanced en "+str(i)+" itérations")
+            good.exec()
+            
+        else:
+            bad = QMessageBox()
+            bad.setText("Les arcs ne sont pas balanced ")
+            bad.exec()
+            
+            
+            
+        print("Nombre d'itérations: ",i)
+        
 
     def create(self):
         print("Create...")
