@@ -1,4 +1,3 @@
-from turtle import pos
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -137,8 +136,7 @@ class Canvas(QWidget):
 						posN1 = (posN1[0] + int((self.tailleNoeud / 2) * vecNorm[0]), posN1[1] + int((self.tailleNoeud / 2) * vecNorm[1]))
 						posN2 = (posN2[0] - int((self.tailleNoeud / 2) * vecNorm[0]), posN2[1] - int((self.tailleNoeud / 2) * vecNorm[1]))
 						vecN1N2 =(posN2[0] - posN1[0], posN2[1] - posN1[1])
-					vecAdap = (int(vecN1N2[0] * valN1),int( vecN1N2[1] * valN1))
-					#print(posN1,posN2,vecAdap)
+					vecAdap = (int(vecN1N2[0] * valN1), int(vecN1N2[1] * valN1))
 					self.arCurseur[cle] = QPoint(posN1[0] + vecAdap[0], posN1[1] + vecAdap[1])
 		else :
 			for i in cur :
@@ -154,7 +152,7 @@ class Canvas(QWidget):
 					posN1 = (posN1[0] + int((self.tailleNoeud / 2) * vecNorm[0]), posN1[1] + int((self.tailleNoeud / 2) * vecNorm[1]))
 					posN2 = (posN2[0] - int((self.tailleNoeud / 2) * vecNorm[0]), posN2[1] - int((self.tailleNoeud / 2) * vecNorm[1]))
 					vecN1N2 = vecN1N2 = (posN2[0] - posN1[0], posN2[1] - posN1[1])
-				vecAdap = (int(vecN1N2[0] * valN1),int( vecN1N2[1] * valN1))
+				vecAdap = (int(vecN1N2[0] * valN1), int(vecN1N2[1] * valN1))
 				if i in self.arCurseur :
 					self.arCurseur[i] = QPoint(posN1[0] + vecAdap[0], posN1[1] + vecAdap[1])
 				else :
