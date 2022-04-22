@@ -113,7 +113,8 @@ class Canvas(QWidget):
 			else :
 				self.dicLigne[i] = 0
 		self.maj_arcurseur()
-				
+		#print("Sature : " + str(self.graphe.partage_sature(("A", "B"))))
+		#print("Quasi-Balanced : " + str(self.graphe.quasi_balanced(("A", "B"))))
 		self.update()
 	
 	
@@ -192,7 +193,7 @@ class Canvas(QWidget):
 				self.supprimer_arc(valeur["arc"])
 		else :
 			if (((valeur["val1"]) + (valeur["val2"])) > 0) :
-				self.graphe.modifier_partage(valeur["arc"], (valeur["val1"]), (valeur["val2"]))
+				self.graphe.modifier_partage(valeur["arc"], float(valeur["val1"]), float(valeur["val2"]))
 			else :
 				self.graphe.supprimer_partage(valeur["arc"])
 			self.maj_graph(self.graphe)
