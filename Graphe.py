@@ -232,7 +232,7 @@ class Graphe :
             
             if nom==noeud:
                 if v!=valeur:
-                    self.noeuds.append((nom,valeur))
+                    self.noeuds.append((nom,round(valeur, 9)))
                     self.noeuds.remove(n)
     
     
@@ -483,7 +483,7 @@ class Graphe :
             voisinage.remove(n2)
             noeud1, alpha1 = self.offre_ext(n1, voisinage)
             noeud2, alpha2 = self.offre_ext(n2, voisinage)
-            return float(poidsarc - alpha1 - alpha2)
+            return round(poidsarc - alpha1 - alpha2, 9)
         else :
             print("Erreur : l'arc (" + n1 + ", " + n2 + ") n'est pas utilisé pour un partage")
     
@@ -499,8 +499,8 @@ class Graphe :
             voisinage.remove(n2)
             noeud1, alpha1 = self.offre_ext(n1, voisinage)
             noeud2, alpha2 = self.offre_ext(n2, voisinage)
-            #print("alpha 1 " + str(alpha1) + "   alpha 2 " + str(alpha2) + "   surplu : " + str(surplu))
-            if (self.get_valeur(n1) == float(alpha1) + float(surplu) / 2.0) and (self.get_valeur(n2) == float(alpha2) + float(surplu) / 2.0):
+            print("alpha 1 " + str(round(alpha1,9)) + "   alpha 2 " + str(round(alpha2,9)) + "   surplu : " + str(surplu))
+            if (self.get_valeur(n1) == round(round(alpha1, 9) + round(surplu / 2.0, 9), 9)) and (self.get_valeur(n2) == round(round(alpha2, 9) + round(surplu / 2.0, 9), 9)):
                 return True
         return False
     
