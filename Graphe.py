@@ -68,8 +68,8 @@ class Graphe :
         else :
             print("Le noeud ", nom, " existe deja !")
 
-	
-	
+    
+    
     def changer_nom_noeud(self, nom, nouv_nom) :
         presNouv = False
         presAnci = False
@@ -233,7 +233,7 @@ class Graphe :
                 if v!=valeur:
                     self.noeuds.append((nom,valeur))
                     self.noeuds.remove(n)
-	
+    
     
     
     def modifier_partage(self, arc, val_noeud1, val_noeud2):
@@ -276,8 +276,8 @@ class Graphe :
         self.modifier_gain(arc[0], val_n1)
         self.modifier_gain(arc[1], val_n2)
     
-	
-	
+    
+    
     def supprimer_partage(self, arc):
         if (arc in self.partage) :
             self.modifier_gain(arc[0], 0)
@@ -287,9 +287,9 @@ class Graphe :
             self.modifier_gain(arc[0], 0)
             self.modifier_gain(arc[1], 0)
             self.partage.remove((arc[1], arc[0]))
-	
-	
-	
+    
+    
+    
     def get_val_noeud(self, noeud):
         for i in self.noeuds:
             if i[0] == noeud :
@@ -461,10 +461,49 @@ class Graphe :
                     self.modifier_gain(n1,v1)
                     self.modifier_gain(n2,v2)
                 self.partage.append((n1,n2))
-                
-        
-        
-                       
+    
+    
+    
+    def partage_sature(self, arc):
+        n1, n2 = arc
+        if (arc in self.partage) or ((n2, n1) in self.partage):
+            if (self.get_valeur(n1) == 0) or (self.get_valeur(n2) == 0):
+                return True
+        return False
+    
+    
+    
+    def get_surplu(self, arc):
+        n1, n2 = arc
+        poidsarc = 1
+        if (arc in self.partage) or ((n2, n1) in self.partage):
+            voisinage = self.get_voisin(n1) + self.get_voisin(n2)
+            voisinage.remove(n1)
+            voisinage.remove(n2)
+            noeud1, alpha1 = self.offre_ext(n1, voisinage)
+            noeud2, alpha2 = self.offre_ext(n2, voisinage)
+            return float(poidsarc - alpha1 - alpha2)
+        else :
+            print("Erreur : l'arc (" + n1 + ", " + n2 + ") n'est pas utilisé pour un partage")
+    
+    
+    
+    def quasi_balanced(self, arc):
+        n1, n2 = arc
+        poidsarc = 1
+        if (arc in self.partage) or ((n2, n1) in self.partage):
+            surplu = self.get_surplu(arc)
+            voisinage = self.get_voisin(n1) + self.get_voisin(n2)
+            voisinage.remove(n1)
+            voisinage.remove(n2)
+            noeud1, alpha1 = self.offre_ext(n1, voisinage)
+            noeud2, alpha2 = self.offre_ext(n2, voisinage)
+            #print("alpha 1 " + str(alpha1) + "   alpha 2 " + str(alpha2) + "   surplu : " + str(surplu))
+            if (self.get_valeur(n1) == float(alpha1) + float(surplu) / 2.0) and (self.get_valeur(n2) == float(alpha2) + float(surplu) / 2.0):
+                return True
+        return False
+    
+    
     def affiche(self):
         """Dessine le graphe"""
         G = nx.Graph()
