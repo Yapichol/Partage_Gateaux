@@ -499,7 +499,7 @@ class Graphe :
             voisinage.remove(n2)
             noeud1, alpha1 = self.offre_ext(n1, voisinage)
             noeud2, alpha2 = self.offre_ext(n2, voisinage)
-            print("alpha 1 " + str(round(alpha1,9)) + "   alpha 2 " + str(round(alpha2,9)) + "   surplu : " + str(surplu))
+            #print("alpha 1 " + str(round(alpha1,9)) + "   alpha 2 " + str(round(alpha2,9)) + "   surplu : " + str(surplu))
             if (self.get_valeur(n1) == round(round(alpha1, 9) + round(surplu / 2.0, 9), 9)) and (self.get_valeur(n2) == round(round(alpha2, 9) + round(surplu / 2.0, 9), 9)):
                 return True
         return False
