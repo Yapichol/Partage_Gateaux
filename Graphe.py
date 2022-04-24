@@ -511,8 +511,8 @@ class Graphe :
         voisins_v = self.get_voisin(v)
         voisins_u.remove(v)
         voisins_v.remove(u)
-        print("voisinsu",voisins_u)
-        print("voisinsv",voisins_v)
+        #print("voisinsu",voisins_u)
+        #print("voisinsv",voisins_v)
         
         if voisins_u==[]:
             alpha_u = 0
@@ -522,7 +522,7 @@ class Graphe :
             alpha_v = 0
         else:
             _,alpha_v = self.offre_ext(v,voisins_v)
-        
+
         
         poids = 1
         suv = poids - alpha_u - alpha_v
@@ -539,24 +539,24 @@ class Graphe :
         else:
             self.modifier_gain(u,xuprime)
             self.modifier_gain(v,xvprime)
-        
-        to_balance.remove((u,v))
             
         
     
     def devenir_balanced(self,partage):
+        """Correspond à une itération pour rendre le matching balanced"""
         to_balance = []
         for arc in partage:
             if ((not self.partage_sature(arc)) and (not self.quasi_balanced(arc))):
                 to_balance.append(arc)
-        i = 0
-        while to_balance and i<30:
-            self.edge_balancing(to_balance)
-            i += 1
-            self.affiche()
+        nb_changed = 0
+        while to_balance:
+            changed = self.edge_balancing(to_balance)
             
-        print("Nombre d'itérations: ",i)
-        
+            if changed:
+                nb_changed += 1
+            
+        return nb_changed
+            
         
     def affiche(self):
         """Dessine le graphe"""
