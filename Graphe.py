@@ -401,7 +401,7 @@ class Graphe :
                 
                 #on considère que si un noeud arrive a obtenir plus que
                 #0.99 il arrivera à obtenir 1
-                v1 = round(v1+((1-v1-v2)*0.5),9)
+                v1 = round(v1+((1-v1-v2)*0.5),4)
                 v2 = 1-v1
                 if v1<=0.01:
                     self.modifier_gain(n1,0)
