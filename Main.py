@@ -39,7 +39,7 @@ if __name__=="__main__":
         g2.partage_aleatoire()
         g2.afficher_graphe()
         graph = g2
-    app = 0
+    
     app = QApplication(sys.argv)
 
     window = MainWindow()

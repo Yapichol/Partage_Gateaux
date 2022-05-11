@@ -296,6 +296,13 @@ class Graphe :
             if i[0] == noeud :
                 return i[1]
         return -1
+    
+    def in_partage(self,noeud):
+        
+        for u,v in self.partage:
+            if u==noeud or v==noeud:
+                return True
+        return False
                 
     def partage_aleatoire(self):
         """Propose un partage aléatoire, on suppose ici que les ressources à 
@@ -342,74 +349,18 @@ class Graphe :
                     paires.append((n1,n2))
         return stable, list(set(pas_stable)),paires
     
-    def devenir_stable(self,pas_stable,paires):
-        
-        while pas_stable:
-            n1 = pas_stable.pop(0)
-            n2 = None
-            options = []
-            for o in paires:
-                x1,x2 = o
-                if x1==n1 and (x2 in pas_stable):
-                    options.append(x2)
-                    paires.remove(o)
-                if x2==n1 and (x1 in pas_stable):
-                    options.append(x1)
-                    paires.remove(o)
-            n2,offre = self.offre_ext(n1,options)
-            v1 = self.get_valeur(n1)
-            
-            
-            if n2!=None and ((n1,n2) not in self.partage) and ((n2,n1) not in self.partage):
-                v2 = self.get_valeur(n2)
-                pas_stable.remove(n2)
-                #on supprime les partages qui existaient entre n1 et 
-                #les autres noeuds du graphe
-                for p in self.partage:
-                    p1,p2 = p
-                    if n1==p1:
-                        self.partage.remove(p)
-                        self.modifier_gain(p2,0)
-                        break
-                    if n1==p2:
-                        self.partage.remove(p)
-                        self.modifier_gain(p1,0)
-                        break
-                #on supprime les partages qui existaient entre n2 et 
-                #les autres noeuds du graphe
-                for p in self.partage:
-                    p1,p2 = p
-                    if n2==p1:
-                        self.partage.remove(p)
-                        self.modifier_gain(p2,0)
-                        break
-                    if n2==p2:
-                        self.partage.remove(p)
-                        self.modifier_gain(p1,0)
-                        break
-                
-                #on considère que si un noeud arrive a obtenir plus que
-                #0.99 il arrivera à obtenir 1
-                v1 = v1+((1-v1-v2)*0.5)
-                v2 = 1-v1
-                if v1<=0.01:
-                    self.modifier_gain(n1,0)
-                    self.modifier_gain(n2,1)
-                elif v2<=0.01:
-                    self.modifier_gain(n1,1)
-                    self.modifier_gain(n2,0)
-                else:
-                    self.modifier_gain(n1,v1)
-                    self.modifier_gain(n2,v2)
-                self.partage.append((n1,n2))
     
+
     def devenir_stable2(self,pas_stable,paires):
-        
+        #print("Partage actuel=",self.partage)
+        #print("Paires instables=",paires)
         previous = copy.deepcopy(self.noeuds)
+        poids = 1
         while (len(pas_stable)>1) and paires:
 
             i = random.randint(0,len(paires)-1)
             n1,n2 = paires[i]
+            #print("Arc choisi = ",paires[i])
             paires.remove(paires[i])
             
             if (n1 in pas_stable) and (n2 in pas_stable):
@@ -450,7 +401,7 @@ class Graphe :
                 
                 #on considère que si un noeud arrive a obtenir plus que
                 #0.99 il arrivera à obtenir 1
-                v1 = v1+((1-v1-v2)*0.5)
+                v1 = round(v1+((1-v1-v2)*0.5),9)
                 v2 = 1-v1
                 if v1<=0.01:
                     self.modifier_gain(n1,0)
@@ -462,7 +413,14 @@ class Graphe :
                     self.modifier_gain(n1,v1)
                     self.modifier_gain(n2,v2)
                 self.partage.append((n1,n2))
-    
+                
+        for u,v in self.arcs:
+                            
+            if (not self.in_partage(u)) and (not self.in_partage(v)):
+                self.modifier_gain(u,poids*0.5)
+                self.modifier_gain(v,poids*0.5)
+                self.modifier_partage((u,v), poids*0.5, poids*0.5)
+                
     
     
     def partage_sature(self, arc):

@@ -365,6 +365,7 @@ class MainWindow(QMainWindow):
         self.r = False
         self.s = False
         boole, liste, paires = self.canvas.graphe.est_stable()
+        poids = 1
         iter_max = 100
         n = 0
         if boole :
@@ -379,33 +380,66 @@ class MainWindow(QMainWindow):
                 affichage = QMessageBox.question(self, "Stabilité", "Voulez-vous afficher chaque itération?" )
                 if affichage == QMessageBox.Yes:
                     affiche = True
-                    
+                  
                 while not boole :
-                    n+=1
-                    g=self.canvas.graphe
-                    #print("partage: ",g.partage)
-                    g.devenir_stable2(liste,paires)
-                    #self.import_graph(g)
-                    self.canvas.maj_graph(g)
-                    if affiche:
-                        self.canvas.repaint()
-                        loop = QEventLoop()
-                        QTimer.singleShot(2000, loop.quit)
-                        loop.exec_()
-                    boole, liste, paires = g.est_stable()
+                    if n==0:
+                        n+=1
+                        g=self.canvas.graphe
+                        for u,v in g.arcs:
+                            valu = g.get_val_noeud(u)
+                            valv = g.get_val_noeud(v)
+                            
+                            if (not g.in_partage(u)) and (not g.in_partage(v)):
+                                g.modifier_gain(u,poids*0.5)
+                                g.modifier_gain(v,poids*0.5)
+                                g.modifier_partage((u,v), poids*0.5, poids*0.5)
+                            
+                        self.canvas.maj_graph(g)
+                        if affiche:
+                            self.canvas.repaint()
+                            loop = QEventLoop()
+                            QTimer.singleShot(2000, loop.quit)
+                            loop.exec_()
+                        boole, liste, paires = g.est_stable()
+                        while self.p and not self.s:
+                            loop = QEventLoop()
+                            QTimer.singleShot(2000, loop.quit)
+                            loop.exec_()
+                            if self.r or self.s:
+                                self.r = False
+                                break
+                        self.p = False
 
-                    while self.p and not self.s:
-                        loop = QEventLoop()
-                        QTimer.singleShot(2000, loop.quit)
-                        loop.exec_()
-                        if self.r or self.s:
-                            self.r = False
-                            break
-                    self.p = False
-
-                    if n>iter_max or self.s:
+                        if n>iter_max or self.s:
                         
-                        break
+                            break
+                        
+                    else:
+                        n+=1
+                        g=self.canvas.graphe
+                        #print("partage: ",g.partage)
+                        g.devenir_stable2(liste,paires)
+                        #self.import_graph(g)
+                        self.canvas.maj_graph(g)
+                        if affiche:
+                            self.canvas.repaint()
+                            loop = QEventLoop()
+                            QTimer.singleShot(2000, loop.quit)
+                            loop.exec_()
+                        boole, liste, paires = g.est_stable()
+    
+                        while self.p and not self.s:
+                            loop = QEventLoop()
+                            QTimer.singleShot(2000, loop.quit)
+                            loop.exec_()
+                            if self.r or self.s:
+                                self.r = False
+                                break
+                        self.p = False
+    
+                        if n>iter_max or self.s:
+                            
+                            break
                 
 
                 nstable = ""
