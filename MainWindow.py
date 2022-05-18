@@ -9,7 +9,7 @@ from AleaDialog import *
 import resources
 import time
 import os
-
+import matplotlib.pyplot as plt
 
 class MainWindow(QMainWindow):
 
@@ -75,6 +75,10 @@ class MainWindow(QMainWindow):
         toolsMenu.addAction(balanced)
         balanced.triggered.connect(self.bal)
 
+        #POUR EFFECTUER LES TESTS
+        #test = QAction(QIcon(),"TEST RAPPORT",self)
+        #toolsMenu.addAction(test)
+        #test.triggered.connect(self.test)
 
         close = fileMenu.addAction(QIcon(":/icons/quit.png"), "&Quit", self.quit, QKeySequence("Ctrl+Q"))
         fileBar.addAction(close)
@@ -239,7 +243,7 @@ class MainWindow(QMainWindow):
         #nbsommets = random.randint(2,10)
         #arcs=random.uniform(0,0.5)
         #g.generer_graphe(nbsommets,arcs)
-        dialo = AleaDialog(6,0.2,parent = self)
+        dialo = AleaDialog(6,0.5,parent = self)
         dialo.accepted.connect(self.aleaDialogAccepted)
         dialo.exec_()
         
@@ -402,7 +406,7 @@ class MainWindow(QMainWindow):
         self.s = False
         boole, liste, paires = self.canvas.graphe.est_stable()
         poids = 1
-        iter_max = 100
+        iter_max = 1000
         n = 0
         if boole :
             good = QMessageBox()
@@ -502,7 +506,80 @@ class MainWindow(QMainWindow):
                 self.canvas.unstable = liste
         self.canvas.set_mode("Move")
 
-
+    def test(self):
+        """Utilisé pour effectuer des tests sur la stabilité"""
+        
+        liste_nbn = [3,4,5,6,7,8,9,10]
+        p = 0.8
+        stable = [0]*8
+        iterations = [0]*8
+        
+        for i in range(len(liste_nbn)):
+            nbn = liste_nbn[i]
+            for j in range(100):
+                g = Graphe()
+                g.generer_graphe(nbn,p)
+                boole, liste, paires = g.est_stable()
+                poids = 1
+                iter_max = 1000
+                n = 0
+                if boole :
+                    #print("Ce graphe est stable")
+                    stable[i]+=1
+                    iterations[i] = iterations[i]+n
+                    break
+                else :
+                        while not boole :
+                            if n==0:
+                                n+=1
+                                for u,v in g.arcs:
+                                    valu = g.get_val_noeud(u)
+                                    valv = g.get_val_noeud(v)
+                                    
+                                    if (not g.in_partage(u)) and (not g.in_partage(v)):
+                                        g.modifier_gain(u,poids*0.5)
+                                        g.modifier_gain(v,poids*0.5)
+                                        g.modifier_partage((u,v), poids*0.5, poids*0.5)
+                                
+                                boole, liste, paires = g.est_stable()
+                                
+        
+                                if n>iter_max:
+                                
+                                    break
+                                
+                            else:
+                                n+=1
+                                g.devenir_stable2(liste,paires)
+                                boole, liste, paires = g.est_stable()
+            
+                                
+                                if n>iter_max :
+                                    
+                                    break
+                        
+                        if boole :
+                            #print("Ce graphe est stable")
+                            stable[i]+=1
+                            iterations[i] = iterations[i]+n
+                            print("n",n)
+                        else:
+                            print("Impossible de rendre ce graphe stable")
+        print("Iterations avant ",iterations)
+        for i in range(len(stable)):
+            s = stable[i]
+            if s!=0:
+                iterations[i] = iterations[i]/s
+        print("Iterations après ",iterations)
+        print("Proba = ",p)
+        print("Nombre de graphes stables :",stable)
+        print("Nb moyen d'iterations : ",iterations)
+        plt.plot(liste_nbn,stable,label='Nb graphe pouvant avoir un partage stable')
+        plt.plot(liste_nbn,iterations,label='Nb iterations moyen pour obtenir un partage stable')
+        #plt.title("Nombre de graphes pouvant être\n Nombre moyen d'itération pour trouver un partage stable selon le nombre de noeuds")
+        plt.xlabel("Nombre de noeuds dans le graphe")
+        plt.legend()
+        plt.show()
     ##############
 
 
