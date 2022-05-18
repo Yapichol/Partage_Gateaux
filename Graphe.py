@@ -72,6 +72,8 @@ class Graphe :
     
     
     def changer_nom_noeud(self, nom, nouv_nom) :
+        """Change le nom du noeud passé en paramètres"""
+        
         presNouv = False
         presAnci = False
         for i in self.noeuds:
@@ -101,6 +103,7 @@ class Graphe :
     
     
     def supprimer_noeud(self, nom) :
+        """Supprime le noeud passé en paramètres"""
         pres = False
         for i in self.noeuds:
             if i[0] == nom :
@@ -171,6 +174,7 @@ class Graphe :
     
     
     def supprimer_arc(self, arc) :
+        """Supprime l'arc passé en paramètres"""
         pos = -1
         for i in range(len(self.arcs)) :
             n1, n2 = self.arcs[i]
@@ -280,6 +284,7 @@ class Graphe :
     
     
     def supprimer_partage(self, arc):
+        """Supprime le partage fait sur l'arc passé en paramètres"""
         if (arc in self.partage) :
             self.modifier_gain(arc[0], 0)
             self.modifier_gain(arc[1], 0)
@@ -292,13 +297,15 @@ class Graphe :
     
     
     def get_val_noeud(self, noeud):
+        """Retourne la valeur du noeud passé en paramètres"""
         for i in self.noeuds:
             if i[0] == noeud :
                 return i[1]
         return -1
     
     def in_partage(self,noeud):
-        
+        """Renvoie True si le noeud partage quelque chose avec un autre 
+        noeud du graphe, False sinon"""
         for u,v in self.partage:
             if u==noeud or v==noeud:
                 return True
@@ -311,7 +318,7 @@ class Graphe :
         noeuds_partages = []
         
         random.shuffle(self.arcs)
-        #print("arcs melange:",arcs)
+        
         for arc in self.arcs:
             n1,n2 = arc
             if (n1 not in noeuds_partages) and (n2 not in noeuds_partages):
@@ -321,11 +328,9 @@ class Graphe :
                 noeuds_partages.append(n1)
                 noeuds_partages.append(n2)
                 self.partage.append((n1,n2))
-        #print("noeuds partages=",noeuds_partages)
-        #print("noeuds apres partage: ",self.noeuds)
         
     def est_stable(self):
-        """Retourn True et une liste vide si le partage est stable, False et la 
+        """Retourne True et une liste vide si le partage est stable, False et la 
         liste des noeuds non stables sinon"""
         
         stable = True
@@ -352,15 +357,14 @@ class Graphe :
     
 
     def devenir_stable2(self,pas_stable,paires):
-        #print("Partage actuel=",self.partage)
-        #print("Paires instables=",paires)
+        """Effectue une itération du processus pour rendre le graphe stable"""
+        
         previous = copy.deepcopy(self.noeuds)
         poids = 1
         while (len(pas_stable)>1) and paires:
 
             i = random.randint(0,len(paires)-1)
             n1,n2 = paires[i]
-            #print("Arc choisi = ",paires[i])
             paires.remove(paires[i])
             
             if (n1 in pas_stable) and (n2 in pas_stable):
@@ -401,7 +405,7 @@ class Graphe :
                 
                 #on considère que si un noeud arrive a obtenir plus que
                 #0.99 il arrivera à obtenir 1
-                v1 = round(v1+((1-v1-v2)*0.5),9)
+                v1 = round(v1+((1-v1-v2)*0.5),4)
                 v2 = 1-v1
                 if v1<=0.01:
                     self.modifier_gain(n1,0)
@@ -424,6 +428,7 @@ class Graphe :
     
     
     def partage_sature(self, arc):
+        """Retourne True si l'arc passé en paramètres est saturé, False sinon"""
         n1, n2 = arc
         if (arc in self.partage) or ((n2, n1) in self.partage):
             if (self.get_valeur(n1) == 0) or (self.get_valeur(n2) == 0):
@@ -433,6 +438,7 @@ class Graphe :
     
     
     def get_surplu(self, arc):
+        """Retourne le surplus d'un arc si celui-ci est impliqué dans un partage"""
         n1, n2 = arc
         poidsarc = 1
         if (arc in self.partage) or ((n2, n1) in self.partage):
@@ -448,6 +454,7 @@ class Graphe :
     
     
     def quasi_balanced(self, arc):
+        """Retourne True si l'arc est quasi-balanced, False sinon"""
         n1, n2 = arc
         poidsarc = 1
         if (arc in self.partage) or ((n2, n1) in self.partage):
@@ -463,14 +470,13 @@ class Graphe :
         return False
     
     def edge_balancing(self,to_balance):
-        
+        """Applique l'algorithme de edge_balancing sur tous les arcs du partage
+        qui ne sont ni saturés, ni quasi-balanced"""
         u,v = random.choice(to_balance)
         voisins_u = self.get_voisin(u)
         voisins_v = self.get_voisin(v)
         voisins_u.remove(v)
         voisins_v.remove(u)
-        #print("voisinsu",voisins_u)
-        #print("voisinsv",voisins_v)
         
         if voisins_u==[]:
             alpha_u = 0
