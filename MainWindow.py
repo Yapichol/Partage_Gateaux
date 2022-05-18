@@ -109,71 +109,71 @@ class MainWindow(QMainWindow):
         print("Import...")
         g = Graphe()
         filename = QFileDialog.getOpenFileName(self,"Open File")
-	    #print(filename)
+        #print(filename)
         fi,a = filename
+        if (fi != '') :
+            data = open(fi, "r")
 
-        data = open(fi, "r")
+            nbsommets = int(data.readline())
+            nbarcs = int(data.readline())
 
-        nbsommets = int(data.readline())
-        nbarcs = int(data.readline())
+            doc = data.readlines()
 
-        doc = data.readlines()
-
-        for i in range(0,nbsommets):
-            tmp = doc[i]
-            lettre =""
-            j = 0
-            while tmp[j]!=',':
-                lettre+=tmp[j]
+            for i in range(0,nbsommets):
+                tmp = doc[i]
+                lettre =""
+                j = 0
+                while tmp[j]!=',':
+                    lettre+=tmp[j]
+                    j+=1
                 j+=1
-            j+=1
-            valeur = ""
-            while tmp[j]!='\n':
-                valeur+=tmp[j]
+                valeur = ""
+                while tmp[j]!='\n':
+                    valeur+=tmp[j]
+                    j+=1
+                
+                lettre = lettre.replace(' ','')
+                valeur = valeur.replace(' ','')
+                
+                valeur = float(valeur)
+                g.ajouter_noeud(lettre)
+                g.modifier_gain(lettre,valeur)
+
+            for i in range(nbsommets,nbsommets+nbarcs):
+                arc = str(doc[i])
+                lettre1 = ""
+                lettre2 = ""
+                j = 0
+                while arc[j]!=',':
+                    lettre1+=arc[j]
+                    j+=1
+                
                 j+=1
+                while arc[j]!='\n':
+                    lettre2+=arc[j]
+                    j+=1
+                lettre1=lettre1.replace(' ','')
+                lettre2=lettre2.replace(' ','')
+                g.ajouter_arc(lettre1,lettre2)
             
-            lettre = lettre.replace(' ','')
-            valeur = valeur.replace(' ','')
-            
-            valeur = float(valeur)
-            g.ajouter_noeud(lettre)
-            g.modifier_gain(lettre,valeur)
+            for i in range(nbsommets+nbarcs,len(doc)):
+                partage = str(doc[i])
+                lettre1 = ""
+                lettre2 = ""
+                j = 0
+                while partage[j]!=',':
+                    lettre1+=partage[j]
+                    j+=1
+                j+=1
+                while partage[j]!='\n':
+                    lettre2+=partage[j]
+                    j+=1
+                lettre1=lettre1.replace(' ','')
+                lettre2=lettre2.replace(' ','')
 
-        for i in range(nbsommets,nbsommets+nbarcs):
-            arc = str(doc[i])
-            lettre1 = ""
-            lettre2 = ""
-            j = 0
-            while arc[j]!=',':
-                lettre1+=arc[j]
-                j+=1
+                g.partage.append((lettre1,lettre2))
             
-            j+=1
-            while arc[j]!='\n':
-                lettre2+=arc[j]
-                j+=1
-            lettre1=lettre1.replace(' ','')
-            lettre2=lettre2.replace(' ','')
-            g.ajouter_arc(lettre1,lettre2)
-        
-        for i in range(nbsommets+nbarcs,len(doc)):
-            partage = str(doc[i])
-            lettre1 = ""
-            lettre2 = ""
-            j = 0
-            while partage[j]!=',':
-                lettre1+=partage[j]
-                j+=1
-            j+=1
-            while partage[j]!='\n':
-                lettre2+=partage[j]
-                j+=1
-            lettre1=lettre1.replace(' ','')
-            lettre2=lettre2.replace(' ','')
-
-            g.partage.append((lettre1,lettre2))
-		
-        self.import_graph(g)
+            self.import_graph(g)
 
     def import_graph(self, graphe):
         self.canvas.unstable=[]
@@ -207,14 +207,14 @@ class MainWindow(QMainWindow):
 
             msg = QMessageBox()
             msg.setText("Le graphe a bien été exporté")
-            msg.exec()  
+            msg.exec()
 
     def expas(self):
-        filename = QFileDialog.getSaveFileName(self,"Save File")	
+        filename = QFileDialog.getSaveFileName(self,"Save File")    
         fi,a = filename
         print(filename)
         if len(fi) >2 :
-			
+            
             with open(str(fi)+".txt","w") as f:
                 f.write(str(len(self.canvas.graphe.noeuds))+'\n')
                 f.write(str(len(self.canvas.graphe.arcs))+'\n')
