@@ -5,6 +5,7 @@ from PyQt5.QtCore import *
 from PyQt5 import QtGui
 from Canvas import *
 from Graphe import *
+from AleaDialog import *
 import resources
 import time
 import os
@@ -232,12 +233,28 @@ class MainWindow(QMainWindow):
             
         
     def alea(self):
+        """Ouvre une fenêtre de dialogue pour choisir le nombre de sommets et
+        la probabilité pour chaque arc d'exister dans le graphe qui va être généré"""
         self.s = True
-        g = Graphe()
         #nbsommets = random.randint(2,10)
         #arcs=random.uniform(0,0.5)
         #g.generer_graphe(nbsommets,arcs)
-        g.generer_graphe(5,0.2)
+        dialo = AleaDialog(6,0.2,parent = self)
+        dialo.accepted.connect(self.aleaDialogAccepted)
+        dialo.exec_()
+        
+    
+    def aleaDialogAccepted(self, valeur):
+        """Permet de récupérer les valeurs choisies pour le nombres de sommets
+        et la probabilité pour chaque arc d'exister dans le graphe généré 
+        aléatoirement"""
+        n = valeur["nbNoeuds"]
+        p = valeur["probaArc"]
+        while (p>1):
+            p = p/10
+        
+        g = Graphe()
+        g.generer_graphe(n,p)
         g.partage_aleatoire()
         self.import_graph(g)
 
@@ -267,6 +284,9 @@ class MainWindow(QMainWindow):
         iter_max = 1000
         g = self.canvas.graphe
         affiche = False
+        self.p = False
+        self.r = False
+        self.s = False
         to_balance = []
         for arc in g.partage:
             if ((not g.partage_sature(arc)) and (not g.quasi_balanced(arc))):
@@ -302,14 +322,29 @@ class MainWindow(QMainWindow):
             for arc in g.partage:
                 if ((not g.partage_sature(arc)) and (not g.quasi_balanced(arc))):
                     to_balance.append(arc)
+            while self.p and not self.s:
+                loop = QEventLoop()
+                QTimer.singleShot(2000, loop.quit)
+                loop.exec_()
+                if self.r or self.s:
+                    self.r = False
+                    break
+            self.p = False
+    
+            if self.s:
+                break
         
-        if i<iter_max:
+        if i<iter_max and not self.s:
             good = QMessageBox()
             good.setText("Les arcs sont balanced en "+str(i)+" itérations")
             good.exec()
-        else:
+        elif not self.s:
             bad = QMessageBox()
             bad.setText("Les arcs ne sont pas balanced ")
+            bad.exec()
+        else:
+            bad = QMessageBox()
+            bad.setText("Processus arrêté")
             bad.exec()
         
 
@@ -359,6 +394,7 @@ class MainWindow(QMainWindow):
 
 
     def rend_stable(self):
+        """Rend le graphe stable si cela est possible"""
         self.canvas.set_mode("Calcul")
         affiche = False
         self.p = False
