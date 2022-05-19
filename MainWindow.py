@@ -89,14 +89,18 @@ class MainWindow(QMainWindow):
 
 
         self.addToolBar( modeToolBar )
+        
         actMove = modeToolBar.addAction( QIcon(":/icons/move.png"), "&Move", self.move)
-        actDraw = modeToolBar.addAction( QIcon(":/icons/draw.png"), "&Draw", self.draw)
+        actDraw = modeToolBar.addAction( QIcon("./icons/draw.png"), "&Draw", self.draw)
         actSelect = modeToolBar.addAction( QIcon(":/icons/select.png"), "&Select", self.select)
-        actZoomin = modeToolBar.addAction( QIcon(":/icons/zoom-in.png"), "&Zoomin", self.zoomin)
-        actZoomout = modeToolBar.addAction( QIcon(":/icons/zoom-out.png"), "&Zoomout", self.zoomout)
-        actPause = modeToolBar.addAction(QtGui.QIcon("./icons/pause.png"),"&Pause", self.pause)
-        actResume = modeToolBar.addAction(QtGui.QIcon("./icons/resume.png"),"&Resume", self.resume)
-        actStop = modeToolBar.addAction(QtGui.QIcon("./icons/stop.png"),"&Stop", self.stop)
+
+        
+        gestionToolbar = QToolBar("Gestion")
+        self.addToolBar( gestionToolbar )
+
+        actPause = gestionToolbar.addAction(QtGui.QIcon("./icons/pause.png"),"&Pause", self.pause)
+        actResume = gestionToolbar.addAction(QtGui.QIcon("./icons/resume.png"),"&Resume", self.resume)
+        actStop = gestionToolbar.addAction(QtGui.QIcon("./icons/stop.png"),"&Stop", self.stop)
         
         self.canvas = Canvas()
         v_layout = QVBoxLayout()
@@ -356,14 +360,6 @@ class MainWindow(QMainWindow):
         print("Create...")
         g = Graphe()        
         self.canvas.imp_g(g)
-
-    def zoomin(self):
-        print("Zoom in...")
-        pass
-
-    def zoomout(self):
-        print("Zoom out...")
-        pass
 
     def pause(self):
         self.p = True
