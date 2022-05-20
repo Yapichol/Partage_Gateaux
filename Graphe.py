@@ -505,22 +505,6 @@ class Graphe :
             self.modifier_gain(v,xvprime)
             
         
-    
-    def devenir_balanced(self,partage):
-        """Correspond à une itération pour rendre le matching balanced"""
-        to_balance = []
-        for arc in partage:
-            if ((not self.partage_sature(arc)) and (not self.quasi_balanced(arc))):
-                to_balance.append(arc)
-        nb_changed = 0
-        while to_balance:
-            changed = self.edge_balancing(to_balance)
-            
-            if changed:
-                nb_changed += 1
-            
-        return nb_changed
-            
         
     def affiche(self):
         """Dessine le graphe"""
